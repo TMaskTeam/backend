@@ -1,0 +1,19 @@
+name: Sync PR with Notion
+on:
+  pull_request:
+    types: [opened, reopened, closed]
+permissions:
+  contents: read
+  pull-requests: write
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Notion PR Sync
+        uses: Slipum/sync-notion-pr@v1.3.2
+        with:
+          notion_token: ${{ secrets.NOTION_TOKEN }}
+          notion_target_status: 'Review' # optional override (see below)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

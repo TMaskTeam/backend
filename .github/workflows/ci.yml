@@ -13,7 +13,7 @@ permissions:
 jobs:
   sync:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' }}
+    # if: ${{ github.event_name == 'pull_request' }}
     steps:
       - uses: actions/checkout@v4
       - name: Run Notion PR Sync

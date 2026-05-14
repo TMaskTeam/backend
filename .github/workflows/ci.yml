@@ -14,6 +14,6 @@ jobs:
         uses: Slipum/sync-notion-pr@v1.3.2
         with:
           notion_token: ${{ secrets.NOTION_TOKEN }}
-          notion_target_status: 'Review' # optional override (see below)
+          # notion_target_status: 'Review' # optional override (see below)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

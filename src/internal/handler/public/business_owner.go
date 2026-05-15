@@ -28,13 +28,13 @@ func Register(
 		return dto.BusinessOwnerRegisterResponse{}, err
 	}
 
-	createdOwner, err := ownerService.Register(owner)
+	err = ownerService.Register(owner)
 	if err != nil {
 		ctx.Status(http.StatusConflict)
 		return dto.BusinessOwnerRegisterResponse{}, err
 	}
 
-	resp := buildResponse(createdOwner)
+	resp := buildResponse(owner)
 
 	ctx.Status(201)
 	return resp, nil

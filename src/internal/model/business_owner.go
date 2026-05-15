@@ -1,6 +1,10 @@
 package model
 
-import "time"
+import (
+	"backend/src/internal/domain"
+	"backend/src/pkg/password"
+	"time"
+)
 
 type BusinessOwner struct {
 	ID           int       `gorm:"column:owner_id;primaryKey"`
@@ -14,4 +18,23 @@ type BusinessOwner struct {
 	Birthday     time.Time `gorm:"column:birthday;not null"`
 	CreatedAt    time.Time `gorm:"column:created_at;autoCreateTime"`
 	UpdatedAt    time.Time `gorm:"column:updated_at;autoUpdateTime"`
+}
+
+func (modelObj *BusinessOwner) ToDomain() (*domain.BusinessOwner, error) {
+	return ToDomain[BusinessOwner, domain.BusinessOwner](modelObj)
+}
+
+func (modelObj *BusinessOwner) ToModel(domainObj *domain.BusinessOwner) (*BusinessOwner, error) {
+	model, err := ToModel[BusinessOwner, domain.BusinessOwner](domainObj)
+	if err != nil {
+		return nil, err
+	}
+
+	hashedPassword, err := password.Hash(domainObj.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	model.PasswordHash = hashedPassword
+	return model, nil
 }

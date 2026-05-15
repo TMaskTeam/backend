@@ -1,5 +1,18 @@
 -- +goose Up
-SELECT 'up SQL query';
+CREATE SCHEMA IF NOT EXISTS mask;
+
+CREATE TABLE IF NOT EXISTS mask.business_owner (
+    owner_id        SERIAL      PRIMARY KEY,
+    first_name      TEXT                        NOT NULL,
+    middle_name     TEXT                        NULL,
+    last_name       TEXT                        NOT NULL,
+    inn             TEXT        UNIQUE          NOT NULL,
+    phone_number    TEXT        UNIQUE          NOT NULL,
+    email           TEXT        UNIQUE          NOT NULL,
+    birtday         DATE                        NOT NULL,   
+    created_at      TIMESTAMP,
+    updated_at      TIMESTAMP   
+);   
 
 -- +goose Down
-SELECT 'down SQL query';
+DROP TABLE IF EXISTS    mask.business_owner;

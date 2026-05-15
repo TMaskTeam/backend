@@ -3,6 +3,8 @@ package impl
 import (
 	"backend/src/internal/db/abstract"
 	"backend/src/internal/domain"
+
+	"gorm.io/gorm"
 )
 
 type BusinessOwnerRepository struct{}
@@ -12,5 +14,6 @@ func NewBusinessOwnerRepository() BusinessOwnerRepository {
 }
 
 func (bo *BusinessOwnerRepository) Upsert(conn abstract.IDBConnection, owner *domain.BusinessOwner) error {
+	db := conn.Get().(*gorm.DB)
 
 }

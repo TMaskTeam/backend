@@ -15,4 +15,4 @@ CREATE TABLE IF NOT EXISTS mask.client (
 );  
 
 -- +goose Down
-DROP TABLE IF EXISTS    mask.business_owner;
+DROP TABLE IF EXISTS    mask.client;

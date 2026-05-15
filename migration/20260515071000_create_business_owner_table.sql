@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS mask.business_owner (
     birthday         DATE                        NOT NULL,   
     created_at      TIMESTAMP,
     updated_at      TIMESTAMP   
-);   
+);
 
 -- +goose Down
 DROP TABLE IF EXISTS    mask.business_owner;

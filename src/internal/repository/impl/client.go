@@ -11,8 +11,8 @@ import (
 
 type ClientRepository struct{}
 
-func NewClientRepository() ClientRepository {
-	return ClientRepository{}
+func NewClientRepository() *ClientRepository {
+	return &ClientRepository{}
 }
 
 func (c *ClientRepository) Upsert(conn abstract.IDBConnection, client *domain.Client) error {

@@ -11,8 +11,8 @@ import (
 
 type BusinessOwnerRepository struct{}
 
-func NewBusinessOwnerRepository() BusinessOwnerRepository {
-	return BusinessOwnerRepository{}
+func NewBusinessOwnerRepository() *BusinessOwnerRepository {
+	return &BusinessOwnerRepository{}
 }
 
 func (bo *BusinessOwnerRepository) Upsert(conn abstract.IDBConnection, owner *domain.BusinessOwner) error {

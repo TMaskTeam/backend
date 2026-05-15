@@ -26,8 +26,6 @@ func (bo *BusinessOwnerRepository) Upsert(conn abstract.IDBConnection, owner *do
 
 	return db.Clauses(clause.OnConflict{
 		Columns: []clause.Column{
-			{Name: "code"},
-			{Name: "owner_id"},
 			{Name: "phone_number"},
 			{Name: "inn"},
 			{Name: "email"},
@@ -48,7 +46,8 @@ func (bo *BusinessOwnerRepository) GetPasswordHashById(conn abstract.IDBConnecti
 	var hashedPassword string
 	err := db.Model(&model.BusinessOwner{}).
 		Where("owner_id = ?", ownerID).
-		Select("password_hash").Error
+		Select("password_hash").
+		Scan(&hashedPassword).Error
 	if err != nil {
 		return "", err
 	}

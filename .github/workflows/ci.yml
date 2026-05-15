@@ -1,4 +1,4 @@
-name: Action
+name: CI process
 
 on:
   push:
@@ -11,6 +11,43 @@ permissions:
   pull-requests: write
 
 jobs:
+  run-container:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_USER: ${{ secrets.DATABASE_USER }}
+      DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+      DATABASE_DBNAME: ${{ secrets.DATABASE_DBNAME }}
+      SERVER_PORT: ${{ secrets.SERVER_PORT }}
+      DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+      DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Docker Compose
+        uses: docker/setup-compose-action@v2
+        with:
+          version: 'latest'
+
+      - name: Build and run services
+        run: docker compose up db backend nginx -d --build --wait --wait-timeout 60
+
+      - name: Install goose
+        run: docker exec backend go install github.com/pressly/goose/v3/cmd/goose@latest
+
+      - name: Migration db
+        run: docker exec backend sh ./src/scripts/migrations.test.sh --up
+
+      - name: Check migrations
+        run: docker exec backend sh ./src/scripts/migrations.test.sh --status
+
+      - name: Testing
+        run: docker exec backend go test -v -short ./src/...
+
+      - name: Shutdown Docker Compose
+        if: always()
+        run: docker compose down -v --rmi all --remove-orphans
+
   sync:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'pull_request' }}

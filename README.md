@@ -1,1 +1,13 @@
 # backend
+
+Пример `.env` файла:
+```ts
+DATABASE_USER=test_user
+DATABASE_PASSWORD=123
+DATABASE_DBNAME=test_db
+
+SERVER_PORT=80
+
+DATABASE_HOST=db
+DATABASE_PORT=5432
+```

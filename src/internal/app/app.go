@@ -8,6 +8,8 @@ import (
 	"backend/src/internal/db/postgres"
 	"backend/src/internal/handler/api"
 	"backend/src/internal/handler/health"
+	"backend/src/internal/handler/public"
+	"backend/src/internal/middleware"
 	"backend/src/internal/provider"
 	"backend/src/internal/validator"
 
@@ -50,7 +52,7 @@ func Run() {
 	app.Get("/openapi.yaml", api.OpenapiYamlHandler)
 	app.Get("/api/*", api.ApiHandler())
 
-	//app.Get("/api/v1/rosstat", middleware.Adapt(public.GetRosstatHandler, serviceProvider))
+	app.Post("/api/v1/auth/register", middleware.Adapt(public.Register, serviceProvider))
 
 	log.Fatal(app.Listen(strconv.Itoa(config.ServerPort)))
 }

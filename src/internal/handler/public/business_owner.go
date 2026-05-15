@@ -6,6 +6,7 @@ import (
 	"backend/src/internal/dto"
 	"backend/src/internal/model"
 	"backend/src/internal/service/abstract"
+	"backend/src/internal/validator"
 	"net/http"
 )
 
@@ -21,9 +22,33 @@ func Register(
 		return dto.BusinessOwnerRegisterResponse{}, err
 	}
 
-	valid := validateOwner(owner)
+	err = validator.ValidateBusinessOwner(owner)
+	if err != nil {
+		ctx.Status(http.StatusBadRequest)
+		return dto.BusinessOwnerRegisterResponse{}, err
+	}
+
+	createdOwner, err := ownerService.Register(owner)
+	if err != nil {
+		ctx.Status(http.StatusConflict)
+		return dto.BusinessOwnerRegisterResponse{}, err
+	}
+
+	resp := buildResponse(createdOwner)
+
+	ctx.Status(201)
+	return resp, nil
 }
 
-func validateOwner(owner *domain.BusinessOwner) bool {
-
+func buildResponse(createdOwner *domain.BusinessOwner) dto.BusinessOwnerRegisterResponse {
+	return dto.BusinessOwnerRegisterResponse{
+		ID:          createdOwner.ID,
+		FirstName:   createdOwner.FirstName,
+		MiddleName:  createdOwner.MiddleName,
+		LastName:    createdOwner.LastName,
+		INN:         createdOwner.INN,
+		PhoneNumber: createdOwner.PhoneNumber,
+		Email:       createdOwner.Email,
+		Birthday:    createdOwner.Birthday,
+	}
 }

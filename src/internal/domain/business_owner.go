@@ -9,7 +9,7 @@ type BusinessOwner struct {
 	MiddleName   *string
 	LastName     string
 	INN          string
-	Phone_number string
+	PhoneNumber  string
 	Email        string
 	Birthday     time.Time
 }

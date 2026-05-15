@@ -3,6 +3,7 @@ CREATE SCHEMA IF NOT EXISTS mask;
 
 CREATE TABLE IF NOT EXISTS mask.business_owner (
     owner_id        SERIAL      PRIMARY KEY,
+    password_hash   TEXT                        NOT NULL,
     first_name      TEXT                        NOT NULL,
     middle_name     TEXT                        NULL,
     last_name       TEXT                        NOT NULL,

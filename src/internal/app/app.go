@@ -24,7 +24,7 @@ func Run() {
 
 	// CORS middleware
 	app.Use(func(c fiber.Ctx) error {
-		c.Set("Access-Control-Allow-Origin", "https://midray.ru")
+		//c.Set("Access-Control-Allow-Origin", "https://midray.ru")
 		c.Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		c.Set("Access-Control-Allow-Headers", "Accept, Content-Type, Authorization")
 

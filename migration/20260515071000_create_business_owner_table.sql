@@ -9,10 +9,11 @@ CREATE TABLE IF NOT EXISTS mask.business_owner (
     inn             TEXT        UNIQUE          NOT NULL,
     phone_number    TEXT        UNIQUE          NOT NULL,
     email           TEXT        UNIQUE          NOT NULL,
-    birthday         DATE                        NOT NULL,   
+    birthday        DATE                        NOT NULL,   
     created_at      TIMESTAMP,
     updated_at      TIMESTAMP   
 );   
 
 -- +goose Down
 DROP TABLE IF EXISTS    mask.business_owner;
+

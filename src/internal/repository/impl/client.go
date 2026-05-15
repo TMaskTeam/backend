@@ -18,7 +18,7 @@ func NewClientRepository() ClientRepository {
 func (c *ClientRepository) Upsert(conn abstract.IDBConnection, client *domain.Client) error {
 	db := conn.Get().(*gorm.DB)
 
-	clientDAO := &model.ClientModel{}
+	clientDAO := &model.Client{}
 	clientDAO, err := clientDAO.ToModel(client)
 	if err != nil {
 		return err
@@ -36,14 +36,14 @@ func (c *ClientRepository) Upsert(conn abstract.IDBConnection, client *domain.Cl
 
 func (c *ClientRepository) Delete(conn abstract.IDBConnection, clientID int) error {
 	db := conn.Get().(*gorm.DB)
-	return db.Where("client_id = ?", clientID).Delete(&model.ClientModel{}).Error
+	return db.Where("client_id = ?", clientID).Delete(&model.Client{}).Error
 }
 
 func (c *ClientRepository) GetPasswordHashById(conn abstract.IDBConnection, clientID int) (string, error) {
 	db := conn.Get().(*gorm.DB)
 
 	var hashedPassword string
-	err := db.Model(&model.ClientModel{}).
+	err := db.Model(&model.Client{}).
 		Where("client_id = ?", clientID).
 		Select("password_hash").
 		Scan(&hashedPassword).Error
@@ -58,7 +58,7 @@ func (c *ClientRepository) GetPasswordHashById(conn abstract.IDBConnection, clie
 func (c *ClientRepository) GetByPhoneNumber(conn abstract.IDBConnection, phoneNumber string) (*domain.Client, error) {
 	db := conn.Get().(*gorm.DB)
 
-	var clientDAO model.ClientModel
+	var clientDAO model.Client
 	err := db.Where("phone_number = ?", phoneNumber).First(&clientDAO).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -73,7 +73,7 @@ func (c *ClientRepository) GetByPhoneNumber(conn abstract.IDBConnection, phoneNu
 func (c *ClientRepository) GetByEmail(conn abstract.IDBConnection, email string) (*domain.Client, error) {
 	db := conn.Get().(*gorm.DB)
 
-	var clientDAO model.ClientModel
+	var clientDAO model.Client
 	err := db.Where("email = ?", email).First(&clientDAO).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {

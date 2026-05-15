@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type ClientModel struct {
+type Client struct {
 	ID           int       `gorm:"column:client_id;primaryKey"`
 	PasswordHash string    `gorm:"column:password_hash;not null"`
 	FirstName    string    `gorm:"column:first_name;not null"`
@@ -19,12 +19,12 @@ type ClientModel struct {
 	UpdatedAt    time.Time `gorm:"column:updated_at;autoUpdateTime"`
 }
 
-func (modelObj *ClientModel) ToDomain() (*domain.Client, error) {
-	return ToDomain[ClientModel, domain.Client](modelObj)
+func (modelObj *Client) ToDomain() (*domain.Client, error) {
+	return ToDomain[Client, domain.Client](modelObj)
 }
 
-func (modelObj *ClientModel) ToModel(domainObj *domain.Client) (*ClientModel, error) {
-	model, err := ToModel[ClientModel, domain.Client](domainObj)
+func (modelObj *Client) ToModel(domainObj *domain.Client) (*Client, error) {
+	model, err := ToModel[Client, domain.Client](domainObj)
 	if err != nil {
 		return nil, err
 	}

@@ -4,11 +4,12 @@ import "time"
 
 type BusinessOwner struct {
 	ID           int
+	PasswordHash string
 	FirstName    string
 	MiddleName   *string
 	LastName     string
 	INN          string
-	phone_number string
-	email        string
-	birthday     time.Time
+	Phone_number string
+	Email        string
+	Birthday     time.Time
 }

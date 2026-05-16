@@ -16,4 +16,3 @@ CREATE TABLE IF NOT EXISTS mask.business_owner (
 
 -- +goose Down
 DROP TABLE IF EXISTS    mask.business_owner;
-

@@ -2,6 +2,17 @@ package dto
 
 import "time"
 
+type BusinessOwnerLoginRequest struct {
+	Login    string `json:"login" validate:"required"`
+	Password string `json:"password" validate:"required,min=8"`
+}
+
+type BusinessOwnerLoginResponse struct {
+	Token     string                `json:"token"`
+	ExpiredAt time.Time             `json:"expired_at"`
+	Owner     BusinessOwnerResponse `json:"owner"`
+}
+
 type BusinessOwnerRegisterRequest struct {
 	FirstName   string  `json:"first_name" validate:"required,min=2"`
 	MiddleName  *string `json:"middle_name,omitempty"`

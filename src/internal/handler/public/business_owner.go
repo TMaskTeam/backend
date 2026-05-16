@@ -37,7 +37,7 @@ func Register(
 	}
 	resp := buildRegisterResponse(owner)
 
-	ctx.Status(201)
+	ctx.Status(http.StatusOK)
 	return resp, nil
 }
 
@@ -59,5 +59,30 @@ func Login(
 	request *dto.BusinessOwnerLoginRequest,
 	ownerService abstract.IBusinessOwnerService,
 ) (dto.BusinessOwnerLoginResponse, error) {
+	token, expiresAt, owner, err := ownerService.Login(request.Login, request.Password)
+	if err != nil {
+		return dto.BusinessOwnerLoginResponse{}, err
+	}
 
+	resp := buildLoginResponse(token, expiresAt, owner)
+
+	ctx.Status(http.StatusOK)
+	return resp, nil
+}
+
+func buildLoginResponse(token string, expiresAt time.Time, owner *domain.BusinessOwner) dto.BusinessOwnerLoginResponse {
+	return dto.BusinessOwnerLoginResponse{
+		Token:     token,
+		ExpiresAt: expiresAt,
+		Owner: dto.BusinessOwnerResponse{
+			ID:          owner.ID,
+			FirstName:   owner.FirstName,
+			MiddleName:  owner.MiddleName,
+			LastName:    owner.LastName,
+			INN:         owner.INN,
+			PhoneNumber: owner.PhoneNumber,
+			Email:       owner.Email,
+			Birthday:    owner.Birthday,
+		},
+	}
 }

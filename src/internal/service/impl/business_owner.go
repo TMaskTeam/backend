@@ -5,6 +5,7 @@ import (
 	"backend/src/internal/domain"
 	repository "backend/src/internal/repository/abstract"
 	"errors"
+	"time"
 )
 
 type BusinessOwnerService struct {
@@ -22,13 +23,13 @@ func NewBusinessOwnerService(
 	}
 }
 
-func (s *BusinessOwnerService) Login(login, password string) error {
+func (s *BusinessOwnerService) Login(login, password string) (string, time.Time, *domain.BusinessOwner, error) {
 	exists, err := s.ownerRepo.GetByLogin(s.conn, login)
 	if err != nil {
-		return err
+		return "", time.Time{}, nil, err
 	}
 	if exists == nil {
-		return errors.New("this login does not exists")
+		return "", time.Time{}, nil, errors.New("this login does not exists")
 	}
 
 }

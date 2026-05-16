@@ -18,6 +18,11 @@ REFERENCES mask.business(business_id)
 ON DELETE CASCADE;
 
 
+
+
+
+
+
 -- +goose Down
 ALTER TABLE mask.bonus_program DROP CONSTRAINT IF EXISTS fk_business;
 DROP TABLE IF EXISTS    mask.bonus_program;
@@ -25,3 +30,35 @@ DROP TABLE IF EXISTS    mask.bonus_program;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//zalupa

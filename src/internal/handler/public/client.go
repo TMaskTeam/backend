@@ -15,34 +15,34 @@ func RegisterClient(
 	ctx context.HandlerContext,
 	request *dto.ClientRegisterRequest,
 	clientService abstract.IClientService,
-) (dto.ClientRegisterResponse, error) {
+) (dto.ClientResponse, error) {
 
 	birthday, err := time.Parse("2006-01-02", request.Birthday)
 	if err != nil {
-		ctx.Status(400)
-		return dto.ClientRegisterResponse{}, errors.New("invalid birthday format, expected YYYY-MM-DD")
+		ctx.Status(http.StatusBadRequest)
+		return dto.ClientResponse{}, errors.New("invalid birthday format, expected YYYY-MM-DD")
 	}
 
 	client, err := model.ToDomain[dto.ClientRegisterRequest, domain.Client](request)
 	if err != nil {
 		ctx.Status(http.StatusBadRequest)
-		return dto.ClientRegisterResponse{}, err
+		return dto.ClientResponse{}, err
 	}
 	client.Birthday = birthday
 
 	err = clientService.Register(client)
 	if err != nil {
 		ctx.Status(http.StatusConflict)
-		return dto.ClientRegisterResponse{}, err
+		return dto.ClientResponse{}, err
 	}
 	resp := buildClientResponse(client)
 
-	ctx.Status(201)
+	ctx.Status(http.StatusOK)
 	return resp, nil
 }
 
-func buildClientResponse(createdClient *domain.Client) dto.ClientRegisterResponse {
-	return dto.ClientRegisterResponse{
+func buildClientResponse(createdClient *domain.Client) dto.ClientResponse {
+	return dto.ClientResponse{
 		ID:          createdClient.ID,
 		FirstName:   createdClient.FirstName,
 		MiddleName:  createdClient.MiddleName,

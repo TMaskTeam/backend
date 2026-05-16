@@ -12,8 +12,8 @@ type ClientRegisterRequest struct {
 	Password    string  `json:"password" validate:"required,min=8"`
 }
 
-type ClientRegisterResponse struct {
-	ID          int       `json:"owner_id"`
+type ClientResponse struct {
+	ID          int       `json:"client_id"`
 	FirstName   string    `json:"first_name"`
 	MiddleName  *string   `json:"middle_name,omitempty"`
 	LastName    string    `json:"last_name"`

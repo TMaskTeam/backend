@@ -30,7 +30,7 @@ func RegisterClient(
 	}
 	client.Birthday = birthday
 
-	err = clientService.Register(client)
+	err = clientService.RegisterClient(client)
 	if err != nil {
 		ctx.Status(http.StatusConflict)
 		return dto.ClientResponse{}, err

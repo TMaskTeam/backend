@@ -41,8 +41,8 @@ func OwnerRegister(
 	return resp, nil
 }
 
-func buildBusinessOwnerResponse(createdOwner *domain.BusinessOwner) dto.BusinessOwnerRegisterResponse {
-	return dto.BusinessOwnerRegisterResponse{
+func buildBusinessOwnerResponse(createdOwner *domain.BusinessOwner) dto.BusinessOwnerResponse {
+	return dto.BusinessOwnerResponse{
 		ID:          createdOwner.ID,
 		FirstName:   createdOwner.FirstName,
 		MiddleName:  createdOwner.MiddleName,

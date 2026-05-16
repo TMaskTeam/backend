@@ -104,7 +104,7 @@ func (bo *BusinessOwnerRepository) GetByLogin(conn abstract.IDBConnection, login
 	db := conn.Get().(*gorm.DB)
 
 	var ownerDAO model.BusinessOwner
-	err := db.Where("email = ? OR phone_number = ?", login).First(&ownerDAO).Error
+	err := db.Where("email = ? OR phone_number = ?", login, login).First(&ownerDAO).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, nil

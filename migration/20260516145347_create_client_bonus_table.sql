@@ -3,9 +3,9 @@ CREATE SCHEMA IF NOT EXISTS mask;
 
 CREATE TABLE IF NOT EXISTS mask.client_bonus_program (
     client_bonus_program  SERIAL      PRIMARY KEY,
-    program_id            INT,
-    client_id             INT,
-    tokens_count          INT,
+    program_id            INTEGER,
+    client_id             INTEGER,
+    tokens_count          INTEGER,
     created_at            TIMESTAMP,
     updated_at            TIMESTAMP   
 );  

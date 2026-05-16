@@ -6,7 +6,6 @@ import (
 	"backend/src/internal/model"
 
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 type ClientRepository struct{}
@@ -24,14 +23,16 @@ func (c *ClientRepository) Upsert(conn abstract.IDBConnection, client *domain.Cl
 		return err
 	}
 
-	return db.Clauses(clause.OnConflict{
-		Columns: []clause.Column{
-			{Name: "phone_number"},
-			{Name: "email"},
-		},
-		UpdateAll: true,
-	}).
-		Create(clientDAO).Error
+	var existing model.Client
+	err = db.Where("phone_number = ? OR email = ?",
+		clientDAO.PhoneNumber, clientDAO.Email).First(&existing).Error
+
+	if err == nil {
+		clientDAO.ID = existing.ID
+		return db.Save(clientDAO).Error
+	}
+
+	return db.Create(clientDAO).Error
 }
 
 func (c *ClientRepository) Delete(conn abstract.IDBConnection, clientID int) error {

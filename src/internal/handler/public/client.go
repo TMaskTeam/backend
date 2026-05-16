@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func RegisterClient(
+func ClientRegister(
 	ctx context.HandlerContext,
 	request *dto.ClientRegisterRequest,
 	clientService abstract.IClientService,
@@ -30,18 +30,18 @@ func RegisterClient(
 	}
 	client.Birthday = birthday
 
-	err = clientService.RegisterClient(client)
+	err = clientService.Register(client)
 	if err != nil {
 		ctx.Status(http.StatusConflict)
 		return dto.ClientResponse{}, err
 	}
-	resp := buildClientResponse(client)
+	resp := buildClientRegisterResponse(client)
 
 	ctx.Status(http.StatusOK)
 	return resp, nil
 }
 
-func buildClientResponse(createdClient *domain.Client) dto.ClientResponse {
+func buildClientRegisterResponse(createdClient *domain.Client) dto.ClientResponse {
 	return dto.ClientResponse{
 		ID:          createdClient.ID,
 		FirstName:   createdClient.FirstName,
@@ -50,5 +50,38 @@ func buildClientResponse(createdClient *domain.Client) dto.ClientResponse {
 		PhoneNumber: createdClient.PhoneNumber,
 		Email:       createdClient.Email,
 		Birthday:    createdClient.Birthday,
+	}
+}
+
+func ClientLogin(
+	ctx context.HandlerContext,
+	request *dto.BusinessOwnerLoginRequest,
+	ownerService abstract.IBusinessOwnerService,
+) (dto.BusinessOwnerLoginResponse, error) {
+	token, expiresAt, owner, err := ownerService.Login(request.Login, request.Password)
+	if err != nil {
+		return dto.BusinessOwnerLoginResponse{}, err
+	}
+
+	resp := buildClientLoginResponse(token, expiresAt, owner)
+
+	ctx.Status(http.StatusOK)
+	return resp, nil
+}
+
+func buildClientLoginResponse(token string, expiresAt time.Time, owner *domain.BusinessOwner) dto.BusinessOwnerLoginResponse {
+	return dto.BusinessOwnerLoginResponse{
+		Token:     token,
+		ExpiresAt: expiresAt,
+		Owner: dto.BusinessOwnerResponse{
+			ID:          owner.ID,
+			FirstName:   owner.FirstName,
+			MiddleName:  owner.MiddleName,
+			LastName:    owner.LastName,
+			INN:         owner.INN,
+			PhoneNumber: owner.PhoneNumber,
+			Email:       owner.Email,
+			Birthday:    owner.Birthday,
+		},
 	}
 }

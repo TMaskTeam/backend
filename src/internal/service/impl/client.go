@@ -22,7 +22,7 @@ func NewClientService(
 	}
 }
 
-func (cs *ClientService) RegisterClient(newClient *domain.Client) error {
+func (cs *ClientService) Register(newClient *domain.Client) error {
 	exists, err := cs.clientRepo.GetByEmail(cs.conn, newClient.Email)
 	if err != nil {
 		return err

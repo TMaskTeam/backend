@@ -56,8 +56,9 @@ func Run() {
 	app.Get("/api/*", api.ApiHandler())
 
 	app.Post("/api/v1/auth/owner/register", middleware.Adapt(public.OwnerRegister, serviceProvider))
-	app.Post("/api/v1/auth/client/register", middleware.Adapt(public.RegisterClient, serviceProvider))
+	app.Post("/api/v1/auth/client/register", middleware.Adapt(public.ClientRegister, serviceProvider))
 	app.Post("/api/v1/auth/owner/login", middleware.Adapt(public.OwnerLogin, serviceProvider))
+	app.Post("/api/v1/auth/client/register", middleware.Adapt(public.ClientLogin, serviceProvider))
 
 	log.Fatal(app.Listen(":" + strconv.Itoa(config.ServerPort)))
 }

@@ -4,6 +4,8 @@ import (
 	connection "backend/src/internal/db/abstract"
 	"backend/src/internal/domain"
 	repository "backend/src/internal/repository/abstract"
+	"backend/src/pkg/jwt"
+	"backend/src/pkg/password"
 	"errors"
 	"time"
 )
@@ -23,15 +25,34 @@ func NewBusinessOwnerService(
 	}
 }
 
-func (s *BusinessOwnerService) Login(login, password string) (string, time.Time, *domain.BusinessOwner, error) {
-	exists, err := s.ownerRepo.GetByLogin(s.conn, login)
+func (s *BusinessOwnerService) Login(login, pw string) (string, time.Time, *domain.BusinessOwner, error) {
+	owner, err := s.ownerRepo.GetByLogin(s.conn, login)
 	if err != nil {
 		return "", time.Time{}, nil, err
 	}
-	if exists == nil {
+	if owner == nil {
 		return "", time.Time{}, nil, errors.New("this login does not exists")
 	}
 
+	hash, err := s.ownerRepo.GetPasswordHashById(s.conn, owner.ID)
+	if err != nil {
+		return "", time.Time{}, nil, err
+	}
+
+	if err := password.CheckHash(hash, pw); err != nil {
+		return "", time.Time{}, nil, errors.New("invalid credentials")
+	}
+
+	// 4. Генерируем JWT токен
+	token, expiresAt, err := jwt.GenerateToken(owner.ID, "business_owner")
+	if err != nil {
+		return "", time.Time{}, nil, err
+	}
+
+	// 5. Очищаем пароль из ответа
+	owner.Password = ""
+
+	return token, expiresAt, owner, nil
 }
 
 func (s *BusinessOwnerService) Register(owner *domain.BusinessOwner) error {

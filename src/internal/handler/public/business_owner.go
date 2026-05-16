@@ -35,14 +35,14 @@ func OwnerRegister(
 		ctx.Status(http.StatusConflict)
 		return dto.BusinessOwnerResponse{}, err
 	}
-	resp := buildRegisterResponse(owner)
+	resp := buildBusinessOwnerResponse(owner)
 
 	ctx.Status(http.StatusOK)
 	return resp, nil
 }
 
-func buildRegisterResponse(createdOwner *domain.BusinessOwner) dto.BusinessOwnerResponse {
-	return dto.BusinessOwnerResponse{
+func buildBusinessOwnerResponse(createdOwner *domain.BusinessOwner) dto.BusinessOwnerRegisterResponse {
+	return dto.BusinessOwnerRegisterResponse{
 		ID:          createdOwner.ID,
 		FirstName:   createdOwner.FirstName,
 		MiddleName:  createdOwner.MiddleName,

@@ -6,7 +6,6 @@ import (
 	"backend/src/internal/model"
 
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 type ClientBonusProgramRepository struct{}
@@ -18,13 +17,12 @@ func NewClientBonusProgramRepository() *ClientBonusProgramRepository {
 func (cbp *ClientBonusProgramRepository) Upsert(conn abstract.IDBConnection, clientBonusProgram *domain.ClientBonusProgram) error {
 	db := conn.Get().(*gorm.DB)
 
-	return db.Clauses(clause.OnConflict{
-		Columns: []clause.Column{
-			{Name: "tokens"},
-		},
-		UpdateAll: true,
-	}).
-		Create(clientBonusProgram).Error
+	clientBonusProgramDAO := &model.ClientBonusProgram{}
+	clientBonusProgramDAO, err := clientBonusProgramDAO.ToModel(clientBonusProgram)
+	if err != nil {
+		return err
+	}
+	return db.Save(clientBonusProgramDAO).Error
 }
 
 func (cbp *ClientBonusProgramRepository) Delete(conn abstract.IDBConnection, bonusID int) error {

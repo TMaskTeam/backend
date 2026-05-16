@@ -19,10 +19,5 @@ func (modelObj *ClientBonusProgram) ToDomain() (*domain.ClientBonusProgram, erro
 }
 
 func (modelObj *ClientBonusProgram) ToModel(domainObj *domain.ClientBonusProgram) (*ClientBonusProgram, error) {
-	model, err := ToModel[ClientBonusProgram, domain.ClientBonusProgram](domainObj)
-	if err != nil {
-		return nil, err
-	}
-
-	return model, nil
+	return ToModel[ClientBonusProgram, domain.ClientBonusProgram](domainObj)
 }

@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS mask.business (
     name            TEXT            NOT NULL,
     address         TEXT            NOT NULL,
     created_at      TIMESTAMP,
-    updated_at      TIMESTAMP,
+    updated_at      TIMESTAMP
 );
 
 

@@ -48,10 +48,16 @@ else
     exit
 fi
 
-DATABASE_USER=$(grep -E "DATABASE_USER" .env | grep -Eo "[^=]+$")
-DATABASE_PASSWORD=$(grep -E "DATABASE_PASSWORD" .env | grep -Eo "[^=]+$")
-DATABASE_DBNAME=$(grep -E "DATABASE_DBNAME" .env | grep -Eo "[^=]+$")
-DATABASE_HOST=$(grep -E "DATABASE_HOST" .env | grep -Eo "[^=]+$")
-DATABASE_PORT=$(grep -E "DATABASE_PORT" .env | grep -Eo "[^=]+$")
+# Читаем из .env
+DATABASE_USER=$(grep -E "^DATABASE_USER=" .env | cut -d'=' -f2- | tr -d '\n\r')
+DATABASE_PASSWORD=$(grep -E "^DATABASE_PASSWORD=" .env | cut -d'=' -f2- | tr -d '\n\r')
+DATABASE_DBNAME=$(grep -E "^DATABASE_DBNAME=" .env | cut -d'=' -f2- | tr -d '\n\r')
+DATABASE_PORT=$(grep -E "^DATABASE_PORT=" .env | cut -d'=' -f2- | tr -d '\n\r')
 
-goose -dir migration postgres "postgresql://$DATABASE_USER:$DATABASE_PASSWORD@$DATABASE_HOST:$DATABASE_PORT/$DATABASE_DBNAME?sslmode=disable" "$action" $action_arg
+MIGRATION_HOST="localhost"
+
+DSN="host=$MIGRATION_HOST port=$DATABASE_PORT user=$DATABASE_USER password=$DATABASE_PASSWORD dbname=$DATABASE_DBNAME sslmode=disable"
+
+echo "Connecting to: host=$MIGRATION_HOST port=$DATABASE_PORT dbname=$DATABASE_DBNAME"
+
+goose -dir migration postgres "$DSN" "$action" $action_arg

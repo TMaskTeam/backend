@@ -15,25 +15,25 @@ func Register(
 	ctx context.HandlerContext,
 	request *dto.BusinessOwnerRegisterRequest,
 	ownerService abstract.IBusinessOwnerService,
-) (dto.BusinessOwnerRegisterResponse, error) {
+) (dto.BusinessOwnerResponse, error) {
 
 	birthday, err := time.Parse("2006-01-02", request.Birthday)
 	if err != nil {
 		ctx.Status(400)
-		return dto.BusinessOwnerRegisterResponse{}, errors.New("invalid birthday format, expected YYYY-MM-DD")
+		return dto.BusinessOwnerResponse{}, errors.New("invalid birthday format, expected YYYY-MM-DD")
 	}
 
 	owner, err := model.ToDomain[dto.BusinessOwnerRegisterRequest, domain.BusinessOwner](request)
 	if err != nil {
 		ctx.Status(http.StatusBadRequest)
-		return dto.BusinessOwnerRegisterResponse{}, err
+		return dto.BusinessOwnerResponse{}, err
 	}
 	owner.Birthday = birthday
 
 	err = ownerService.Register(owner)
 	if err != nil {
 		ctx.Status(http.StatusConflict)
-		return dto.BusinessOwnerRegisterResponse{}, err
+		return dto.BusinessOwnerResponse{}, err
 	}
 	resp := buildResponse(owner)
 
@@ -41,8 +41,8 @@ func Register(
 	return resp, nil
 }
 
-func buildResponse(createdOwner *domain.BusinessOwner) dto.BusinessOwnerRegisterResponse {
-	return dto.BusinessOwnerRegisterResponse{
+func buildResponse(createdOwner *domain.BusinessOwner) dto.BusinessOwnerResponse {
+	return dto.BusinessOwnerResponse{
 		ID:          createdOwner.ID,
 		FirstName:   createdOwner.FirstName,
 		MiddleName:  createdOwner.MiddleName,

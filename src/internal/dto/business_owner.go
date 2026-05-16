@@ -13,7 +13,7 @@ type BusinessOwnerRegisterRequest struct {
 	Password    string  `json:"password" validate:"required,min=8"`
 }
 
-type BusinessOwnerRegisterResponse struct {
+type BusinessOwnerResponse struct {
 	ID          int       `json:"owner_id"`
 	FirstName   string    `json:"first_name"`
 	MiddleName  *string   `json:"middle_name,omitempty"`

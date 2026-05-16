@@ -54,5 +54,5 @@ func Run() {
 
 	app.Post("/api/v1/auth/register", middleware.Adapt(public.Register, serviceProvider))
 
-	log.Fatal(app.Listen(strconv.Itoa(config.ServerPort)))
+	log.Fatal(app.Listen(":" + strconv.Itoa(config.ServerPort)))
 }

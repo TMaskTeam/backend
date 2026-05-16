@@ -6,7 +6,6 @@ import (
 	"backend/src/internal/model"
 
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 type BusinessOwnerRepository struct{}
@@ -24,15 +23,16 @@ func (bo *BusinessOwnerRepository) Upsert(conn abstract.IDBConnection, owner *do
 		return err
 	}
 
-	return db.Clauses(clause.OnConflict{
-		Columns: []clause.Column{
-			{Name: "phone_number"},
-			{Name: "inn"},
-			{Name: "email"},
-		},
-		UpdateAll: true,
-	}).
-		Create(ownerDAO).Error
+	var existing model.BusinessOwner
+	err = db.Where("inn = ? OR phone_number = ? OR email = ?",
+		ownerDAO.INN, ownerDAO.PhoneNumber, ownerDAO.Email).First(&existing).Error
+
+	if err == nil {
+		ownerDAO.ID = existing.ID
+		return db.Save(ownerDAO).Error
+	}
+
+	return db.Create(ownerDAO).Error
 }
 
 func (bo *BusinessOwnerRepository) Delete(conn abstract.IDBConnection, ownerID int) error {

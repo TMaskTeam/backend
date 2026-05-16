@@ -3,14 +3,14 @@ package dto
 import "time"
 
 type BusinessOwnerRegisterRequest struct {
-	FirstName   string    `json:"first_name"`
-	MiddleName  *string   `json:"middle_name,omitempty"`
-	LastName    string    `json:"last_name"`
-	INN         string    `json:"inn"`
-	PhoneNumber string    `json:"phone_number"`
-	Email       string    `json:"email"`
-	Birthday    time.Time `json:"birthday"`
-	Password    string    `json:"password"`
+	FirstName   string  `json:"first_name" validate:"required,min=2"`
+	MiddleName  *string `json:"middle_name,omitempty"`
+	LastName    string  `json:"last_name" validate:"required,min=2"`
+	INN         string  `json:"inn" validate:"required,min=10,max=12"`
+	PhoneNumber string  `json:"phone_number" validate:"required"`
+	Email       string  `json:"email" validate:"required,email"`
+	Birthday    string  `json:"birthday" validate:"required"`
+	Password    string  `json:"password" validate:"required,min=8"`
 }
 
 type BusinessOwnerRegisterResponse struct {

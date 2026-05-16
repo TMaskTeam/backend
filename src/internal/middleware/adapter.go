@@ -117,6 +117,9 @@ func getArguments(funcType reflect.Type, fiberCtx fiber.Ctx, serviceProvider *pr
 }
 
 func wrapError(errArg any, fiberCtx fiber.Ctx) error {
+	if errArg == nil {
+		return nil
+	}
 	err := errArg.(error)
 	if sc, ok := err.(interface{ StatusCode() int }); ok {
 		return fiberCtx.Status(sc.StatusCode()).JSON(fiber.Map{"error": err.Error()})

@@ -27,7 +27,10 @@ func Run() {
 	serviceProvider := provider.NewServiceProvider()
 
 	ownerRepo := rimpl.NewBusinessOwnerRepository()
+	clientRepo := rimpl.NewClientRepository()
+
 	serviceProvider.Register((*sabst.IBusinessOwnerService)(nil), simpl.NewBusinessOwnerService(conn, ownerRepo))
+	serviceProvider.Register((*sabst.IClientService)(nil), simpl.NewClientService(conn, clientRepo))
 
 	app := fiber.New(fiber.Config{
 		EnableSplittingOnParsers: true,

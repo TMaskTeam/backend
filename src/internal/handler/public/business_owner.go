@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func Register(
+func RegisterBusinessOwner(
 	ctx context.HandlerContext,
 	request *dto.BusinessOwnerRegisterRequest,
 	ownerService abstract.IBusinessOwnerService,
@@ -35,13 +35,13 @@ func Register(
 		ctx.Status(http.StatusConflict)
 		return dto.BusinessOwnerRegisterResponse{}, err
 	}
-	resp := buildResponse(owner)
+	resp := buildBusinessOwnerResponse(owner)
 
 	ctx.Status(201)
 	return resp, nil
 }
 
-func buildResponse(createdOwner *domain.BusinessOwner) dto.BusinessOwnerRegisterResponse {
+func buildBusinessOwnerResponse(createdOwner *domain.BusinessOwner) dto.BusinessOwnerRegisterResponse {
 	return dto.BusinessOwnerRegisterResponse{
 		ID:          createdOwner.ID,
 		FirstName:   createdOwner.FirstName,

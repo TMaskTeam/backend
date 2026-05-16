@@ -52,7 +52,8 @@ func Run() {
 	app.Get("/openapi.yaml", api.OpenapiYamlHandler)
 	app.Get("/api/*", api.ApiHandler())
 
-	app.Post("/api/v1/auth/owner/register", middleware.Adapt(public.Register, serviceProvider))
+	app.Post("/api/v1/auth/owner/register", middleware.Adapt(public.RegisterBusinessOwner, serviceProvider))
+	app.Post("/api/v1/auth/client/register", middleware.Adapt(public.RegisterClient, serviceProvider))
 
 	log.Fatal(app.Listen(":" + strconv.Itoa(config.ServerPort)))
 }

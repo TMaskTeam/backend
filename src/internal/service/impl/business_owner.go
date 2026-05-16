@@ -22,6 +22,17 @@ func NewBusinessOwnerService(
 	}
 }
 
+func (s *BusinessOwnerService) Login(login, password string) error {
+	exists, err := s.ownerRepo.GetByLogin(s.conn, login)
+	if err != nil {
+		return err
+	}
+	if exists == nil {
+		return errors.New("this login does not exists")
+	}
+
+}
+
 func (s *BusinessOwnerService) Register(owner *domain.BusinessOwner) error {
 	exists, err := s.ownerRepo.GetByINN(s.conn, owner.INN)
 	if err != nil {

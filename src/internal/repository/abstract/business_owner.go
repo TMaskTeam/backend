@@ -13,4 +13,6 @@ type IBusinessOwnerRepository interface {
 	GetByINN(conn abstract.IDBConnection, inn string) (*domain.BusinessOwner, error)
 	GetByPhoneNumber(conn abstract.IDBConnection, phoneNumber string) (*domain.BusinessOwner, error)
 	GetByEmail(conn abstract.IDBConnection, email string) (*domain.BusinessOwner, error)
+
+	GetByLogin(conn abstract.IDBConnection, login string) (*domain.BusinessOwner, error)
 }

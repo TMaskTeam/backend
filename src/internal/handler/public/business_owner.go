@@ -35,13 +35,13 @@ func Register(
 		ctx.Status(http.StatusConflict)
 		return dto.BusinessOwnerResponse{}, err
 	}
-	resp := buildResponse(owner)
+	resp := buildRegisterResponse(owner)
 
 	ctx.Status(201)
 	return resp, nil
 }
 
-func buildResponse(createdOwner *domain.BusinessOwner) dto.BusinessOwnerResponse {
+func buildRegisterResponse(createdOwner *domain.BusinessOwner) dto.BusinessOwnerResponse {
 	return dto.BusinessOwnerResponse{
 		ID:          createdOwner.ID,
 		FirstName:   createdOwner.FirstName,
@@ -52,4 +52,12 @@ func buildResponse(createdOwner *domain.BusinessOwner) dto.BusinessOwnerResponse
 		Email:       createdOwner.Email,
 		Birthday:    createdOwner.Birthday,
 	}
+}
+
+func Login(
+	ctx context.HandlerContext,
+	request *dto.BusinessOwnerLoginRequest,
+	ownerService abstract.IBusinessOwnerService,
+) (dto.BusinessOwnerLoginResponse, error) {
+
 }

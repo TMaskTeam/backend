@@ -9,7 +9,7 @@ type BusinessOwnerLoginRequest struct {
 
 type BusinessOwnerLoginResponse struct {
 	Token     string                `json:"token"`
-	ExpiredAt time.Time             `json:"expired_at"`
+	ExpiresAt time.Time             `json:"expires_at"`
 	Owner     BusinessOwnerResponse `json:"owner"`
 }
 

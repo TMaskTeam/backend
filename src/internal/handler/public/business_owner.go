@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func Register(
+func OwnerRegister(
 	ctx context.HandlerContext,
 	request *dto.BusinessOwnerRegisterRequest,
 	ownerService abstract.IBusinessOwnerService,
@@ -54,7 +54,7 @@ func buildRegisterResponse(createdOwner *domain.BusinessOwner) dto.BusinessOwner
 	}
 }
 
-func Login(
+func OwnerLogin(
 	ctx context.HandlerContext,
 	request *dto.BusinessOwnerLoginRequest,
 	ownerService abstract.IBusinessOwnerService,

@@ -28,18 +28,21 @@ elif [ "$1" = "--new" ] || [ "$1" = "-n" ]; then
 
 elif [ "$1" = "--status" ] || [ "$1" = "-s" ]; then
     action=status
+    
 elif [ "$1" = "--up" ] || [ "$1" = "-u" ]; then
     action=up
     if [ -n "$2" ]; then
         action=up-to
         action_arg="$2"
     fi
+
 elif [ "$1" = "--down" ] || [ "$1" = "-d" ]; then
     action=down
     if [ -n "$2" ]; then
         action=down-to
         action_arg="$2"
     fi
+
 else
     echo "Try: sh scripts/migrations.sh --help"
     exit

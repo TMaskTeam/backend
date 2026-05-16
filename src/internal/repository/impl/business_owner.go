@@ -99,3 +99,18 @@ func (bo *BusinessOwnerRepository) GetByEmail(conn abstract.IDBConnection, email
 
 	return ownerDAO.ToDomain()
 }
+
+func (bo *BusinessOwnerRepository) GetByLogin(conn abstract.IDBConnection, login string) (*domain.BusinessOwner, error) {
+	db := conn.Get().(*gorm.DB)
+
+	var ownerDAO model.BusinessOwner
+	err := db.Where("email = ? OR phone_number = ?", login, login).First(&ownerDAO).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return ownerDAO.ToDomain()
+}

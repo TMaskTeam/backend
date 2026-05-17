@@ -43,3 +43,31 @@ func (s *BonusProgramService) GetByBusinessID(businessID int) ([]*domain.BonusPr
 func (s *BonusProgramService) GetAll() ([]*domain.BonusProgram, error) {
 	return s.bonusProgramRepo.GetAll(s.conn)
 }
+
+func (s *BonusProgramService) GetByProgramID(programID int) (*domain.BonusProgram, error) {
+	return s.bonusProgramRepo.GetByProgramID(s.conn, programID)
+}
+
+func (s *BonusProgramService) Update(programID int, programName, tokenName string) (*domain.BonusProgram, error) {
+	program, err := s.bonusProgramRepo.GetByProgramID(s.conn, programID)
+	if err != nil {
+		return nil, err
+	}
+	if program == nil {
+		return nil, nil
+	}
+
+	program.ProgramName = programName
+	program.TokenName = tokenName
+
+	err = s.bonusProgramRepo.Update(s.conn, program)
+	if err != nil {
+		return nil, err
+	}
+
+	return program, nil
+}
+
+func (s *BonusProgramService) Delete(programID int) error {
+	return s.bonusProgramRepo.Delete(s.conn, programID)
+}

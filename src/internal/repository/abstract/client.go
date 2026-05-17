@@ -12,4 +12,6 @@ type IClientRepository interface {
 	GetPasswordHashById(conn abstract.IDBConnection, clientID int) (string, error)
 	GetByPhoneNumber(conn abstract.IDBConnection, phoneNumber string) (*domain.Client, error)
 	GetByEmail(conn abstract.IDBConnection, email string) (*domain.Client, error)
+
+	GetByLogin(conn abstract.IDBConnection, login string) (*domain.Client, error)
 }

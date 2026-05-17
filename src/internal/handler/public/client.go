@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func RegisterClient(
+func ClientRegister(
 	ctx context.HandlerContext,
 	request *dto.ClientRegisterRequest,
 	clientService abstract.IClientService,
@@ -35,13 +35,13 @@ func RegisterClient(
 		ctx.Status(http.StatusConflict)
 		return dto.ClientResponse{}, err
 	}
-	resp := buildClientResponse(client)
+	resp := buildClientRegisterResponse(client)
 
 	ctx.Status(http.StatusOK)
 	return resp, nil
 }
 
-func buildClientResponse(createdClient *domain.Client) dto.ClientResponse {
+func buildClientRegisterResponse(createdClient *domain.Client) dto.ClientResponse {
 	return dto.ClientResponse{
 		ID:          createdClient.ID,
 		FirstName:   createdClient.FirstName,
@@ -50,5 +50,38 @@ func buildClientResponse(createdClient *domain.Client) dto.ClientResponse {
 		PhoneNumber: createdClient.PhoneNumber,
 		Email:       createdClient.Email,
 		Birthday:    createdClient.Birthday,
+	}
+}
+
+func ClientLogin(
+	ctx context.HandlerContext,
+	request *dto.ClientLoginRequest,
+	clientService abstract.IClientService,
+) (dto.ClientLoginResponse, error) {
+	token, expiresAt, owner, err := clientService.Login(request.Login, request.Password)
+	if err != nil {
+		ctx.Status(http.StatusBadRequest)
+		return dto.ClientLoginResponse{}, err
+	}
+
+	resp := buildClientLoginResponse(token, expiresAt, owner)
+
+	ctx.Status(http.StatusOK)
+	return resp, nil
+}
+
+func buildClientLoginResponse(token string, expiresAt time.Time, client *domain.Client) dto.ClientLoginResponse {
+	return dto.ClientLoginResponse{
+		Token:     token,
+		ExpiresAt: expiresAt,
+		Owner: dto.ClientResponse{
+			ID:          client.ID,
+			FirstName:   client.FirstName,
+			MiddleName:  client.MiddleName,
+			LastName:    client.LastName,
+			PhoneNumber: client.PhoneNumber,
+			Email:       client.Email,
+			Birthday:    client.Birthday,
+		},
 	}
 }

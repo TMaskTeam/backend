@@ -85,3 +85,18 @@ func (c *ClientRepository) GetByEmail(conn abstract.IDBConnection, email string)
 
 	return clientDAO.ToDomain()
 }
+
+func (c *ClientRepository) GetByLogin(conn abstract.IDBConnection, login string) (*domain.Client, error) {
+	db := conn.Get().(*gorm.DB)
+
+	var clientDAO model.Client
+	err := db.Where("email = ? OR phone_number = ?", login, login).First(&clientDAO).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return clientDAO.ToDomain()
+}

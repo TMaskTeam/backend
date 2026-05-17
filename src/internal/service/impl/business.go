@@ -37,14 +37,14 @@ func (bs *BusinessService) Create(ownerID int, name string, address string) (*do
 	return business, nil
 }
 
-func (bs *BusinessService) GetByOwnerID(ownerID int) ([]domain.Business, error) {
+func (bs *BusinessService) GetByOwnerID(ownerID int) ([]*domain.Business, error) {
 	businesses, err := bs.businessRepo.GetByOwnerID(bs.conn, ownerID)
 	if err != nil {
 		return nil, err
 	}
 
 	if businesses == nil {
-		return []domain.Business{}, nil
+		return []*domain.Business{}, nil
 	}
 
 	return businesses, nil

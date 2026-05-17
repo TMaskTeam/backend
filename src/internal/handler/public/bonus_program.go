@@ -2,7 +2,6 @@ package public
 
 import (
 	context "backend/src/internal/context/abstract"
-	"backend/src/internal/domain"
 	"backend/src/internal/dto"
 	"backend/src/internal/service/abstract"
 	"net/http"
@@ -31,7 +30,7 @@ func CreateBonusProgram(
 		return nil, err
 	}
 
-	resp := buildBonusProgramResponse(program)
+	resp := dto.ToBonusProgramResponse(program)
 
 	ctx.Status(http.StatusCreated)
 	return &resp, nil
@@ -53,7 +52,7 @@ func GetBonusProgramsByBusinessID(
 		return nil, err
 	}
 
-	resp := buildBonusProgramResponseList(programs)
+	resp := dto.ToBonusProgramResponseList(programs)
 
 	ctx.Status(http.StatusOK)
 	return resp, nil
@@ -69,25 +68,86 @@ func GetAllBonusPrograms(
 		return nil, err
 	}
 
-	resp := buildBonusProgramResponseList(programs)
+	resp := dto.ToBonusProgramResponseList(programs)
 
 	ctx.Status(http.StatusOK)
 	return resp, nil
 }
 
-func buildBonusProgramResponse(program *domain.BonusProgram) dto.BonusProgramResponse {
-	return dto.BonusProgramResponse{
-		ProgramID:   program.ProgramID,
-		BusinessID:  program.BusinessID,
-		ProgramName: program.ProgramName,
-		TokenName:   program.TokenName,
+func GetBonusProgramByProgramID(
+	ctx context.HandlerContext,
+	bonusProgramService abstract.IBonusProgramService,
+) (*dto.BonusProgramResponse, error) {
+	programID, err := strconv.Atoi(ctx.Params("program_id"))
+	if err != nil {
+		ctx.Status(http.StatusBadRequest)
+		return nil, err
 	}
+
+	program, err := bonusProgramService.GetByProgramID(programID)
+	if err != nil {
+		ctx.Status(http.StatusInternalServerError)
+		return nil, err
+	}
+	if program == nil {
+		ctx.Status(http.StatusNotFound)
+		return nil, nil
+	}
+
+	resp := dto.ToBonusProgramResponse(program)
+
+	ctx.Status(http.StatusOK)
+	return &resp, nil
 }
 
-func buildBonusProgramResponseList(programs []*domain.BonusProgram) []dto.BonusProgramResponse {
-	result := make([]dto.BonusProgramResponse, 0, len(programs))
-	for _, p := range programs {
-		result = append(result, buildBonusProgramResponse(p))
+func UpdateBonusProgram(
+	ctx context.HandlerContext,
+	bonusProgramService abstract.IBonusProgramService,
+) (*dto.BonusProgramResponse, error) {
+	programID, err := strconv.Atoi(ctx.Params("program_id"))
+	if err != nil {
+		ctx.Status(http.StatusBadRequest)
+		return nil, err
 	}
-	return result
+
+	var req dto.UpdateBonusProgramRequest
+	if err := ctx.BindJSON(&req); err != nil {
+		ctx.Status(http.StatusBadRequest)
+		return nil, err
+	}
+
+	program, err := bonusProgramService.Update(programID, req.ProgramName, req.TokenName)
+	if err != nil {
+		ctx.Status(http.StatusInternalServerError)
+		return nil, err
+	}
+	if program == nil {
+		ctx.Status(http.StatusNotFound)
+		return nil, nil
+	}
+
+	resp := dto.ToBonusProgramResponse(program)
+
+	ctx.Status(http.StatusOK)
+	return &resp, nil
+}
+
+func DeleteBonusProgram(
+	ctx context.HandlerContext,
+	bonusProgramService abstract.IBonusProgramService,
+) (interface{}, error) {
+	programID, err := strconv.Atoi(ctx.Params("program_id"))
+	if err != nil {
+		ctx.Status(http.StatusBadRequest)
+		return nil, err
+	}
+
+	err = bonusProgramService.Delete(programID)
+	if err != nil {
+		ctx.Status(http.StatusInternalServerError)
+		return nil, err
+	}
+
+	ctx.Status(http.StatusNoContent)
+	return nil, nil
 }

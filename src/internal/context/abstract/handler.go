@@ -8,4 +8,5 @@ type HandlerContext interface {
 	BindJSON(data any) error
 	SetCookie(name, value string, expiresAt time.Time, httpOnly, secure bool)
 	GetLocal(key string) any
+	Params(param string) string
 }

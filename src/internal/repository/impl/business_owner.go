@@ -39,7 +39,7 @@ func (bo *BusinessOwnerRepository) UpdateByID(conn abstract.IDBConnection, owner
 		return err
 	}
 
-	return db.Model(&model.BusinessOwner{}).
+	err = db.Model(&model.BusinessOwner{}).
 		Where("owner_id = ?", owner.ID).
 		Updates(map[string]interface{}{
 			"first_name":    ownerDAO.FirstName,
@@ -50,6 +50,12 @@ func (bo *BusinessOwnerRepository) UpdateByID(conn abstract.IDBConnection, owner
 			"password_hash": ownerDAO.PasswordHash,
 			"updated_at":    time.Now(),
 		}).Error
+	if err != nil {
+		return err
+	}
+
+	owner.ID = ownerDAO.ID
+	return nil
 }
 
 func (bo *BusinessOwnerRepository) Upsert(conn abstract.IDBConnection, owner *domain.BusinessOwner) error {
@@ -67,10 +73,20 @@ func (bo *BusinessOwnerRepository) Upsert(conn abstract.IDBConnection, owner *do
 
 	if err == nil {
 		ownerDAO.ID = existing.ID
-		return db.Save(ownerDAO).Error
+		err = db.Save(ownerDAO).Error
+		if err != nil {
+			return err
+		}
+		owner.ID = ownerDAO.ID
+		return nil
 	}
 
-	return db.Create(ownerDAO).Error
+	err = db.Create(ownerDAO).Error
+	if err != nil {
+		return err
+	}
+	owner.ID = ownerDAO.ID
+	return nil
 }
 
 func (bo *BusinessOwnerRepository) Delete(conn abstract.IDBConnection, ownerID int) error {

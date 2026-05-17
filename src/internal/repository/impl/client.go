@@ -30,10 +30,20 @@ func (c *ClientRepository) Upsert(conn abstract.IDBConnection, client *domain.Cl
 
 	if err == nil {
 		clientDAO.ID = existing.ID
-		return db.Save(clientDAO).Error
+		err = db.Save(clientDAO).Error
+		if err != nil {
+			return err
+		}
+		client.ID = clientDAO.ID
+		return nil
 	}
 
-	return db.Create(clientDAO).Error
+	err = db.Create(clientDAO).Error
+	if err != nil {
+		return err
+	}
+	client.ID = clientDAO.ID
+	return nil
 }
 
 func (c *ClientRepository) Delete(conn abstract.IDBConnection, clientID int) error {
@@ -126,7 +136,7 @@ func (c *ClientRepository) UpdateByID(conn abstract.IDBConnection, client *domai
 		return err
 	}
 
-	return db.Model(&model.BusinessOwner{}).
+	err = db.Model(&model.BusinessOwner{}).
 		Where("owner_id = ?", client.ID).
 		Updates(map[string]interface{}{
 			"first_name":    clientDAO.FirstName,
@@ -137,4 +147,10 @@ func (c *ClientRepository) UpdateByID(conn abstract.IDBConnection, client *domai
 			"password_hash": clientDAO.PasswordHash,
 			"updated_at":    time.Now(),
 		}).Error
+	if err != nil {
+		return err
+	}
+
+	client.ID = clientDAO.ID
+	return nil
 }

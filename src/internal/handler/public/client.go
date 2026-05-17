@@ -85,3 +85,36 @@ func buildClientLoginResponse(token string, expiresAt time.Time, client *domain.
 		},
 	}
 }
+
+func ClientJoin(
+	ctx context.HandlerContext,
+	request *dto.ClientLoginRequest,
+	clientService abstract.IClientService,
+) (dto.ClientLoginResponse, error) {
+	token, expiresAt, owner, err := clientService.Login(request.Login, request.Password)
+	if err != nil {
+		ctx.Status(http.StatusBadRequest)
+		return dto.ClientLoginResponse{}, err
+	}
+
+	resp := buildClientLoginResponse(token, expiresAt, owner)
+
+	ctx.Status(http.StatusOK)
+	return resp, nil
+}
+
+func buildClientJoinResponse(token string, expiresAt time.Time, client *domain.Client) dto.ClientLoginResponse {
+	return dto.ClientLoginResponse{
+		Token:     token,
+		ExpiresAt: expiresAt,
+		Owner: dto.ClientResponse{
+			ID:          client.ID,
+			FirstName:   client.FirstName,
+			MiddleName:  client.MiddleName,
+			LastName:    client.LastName,
+			PhoneNumber: client.PhoneNumber,
+			Email:       client.Email,
+			Birthday:    client.Birthday,
+		},
+	}
+}

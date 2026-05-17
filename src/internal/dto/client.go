@@ -2,6 +2,18 @@ package dto
 
 import "time"
 
+type ClientJoinRequest struct {
+	Login    string `json:"login" validate:"required"`
+	Password string `json:"password" validate:"required"`
+}
+
+type ClientJoinResponse struct {
+	ProgramID   int    `json:"program_id"`
+	BusinessID  int    `json:"business_id"`
+	ProgramName string `json:"program_name"`
+	TokenName   string `json:"token_name"`
+}
+
 type ClientLoginRequest struct {
 	Login    string `json:"login" validate:"required"`
 	Password string `json:"password" validate:"required"`

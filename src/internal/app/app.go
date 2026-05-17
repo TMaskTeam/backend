@@ -60,5 +60,7 @@ func Run() {
 	app.Post("/api/v1/auth/owner/login", middleware.Adapt(public.OwnerLogin, serviceProvider))
 	app.Post("/api/v1/auth/client/login", middleware.Adapt(public.ClientLogin, serviceProvider))
 
+	app.Post("/api/v1/programs/:program_id/join", middleware.Adapt(public.ClientJoin, serviceProvider))
+
 	log.Fatal(app.Listen(":" + strconv.Itoa(config.ServerPort)))
 }

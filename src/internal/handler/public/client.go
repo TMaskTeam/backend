@@ -91,23 +91,29 @@ func ClientJoin(
 	request *dto.ClientJoinRequest,
 	clientService abstract.IClientService,
 ) (dto.ClientJoinResponse, error) {
-	clientBonusProgramID, TokensCount, err := clientService.Join(request.Client, request.ProgramID)
+	client, err := model.ToDomain[dto.ClientResponse, domain.Client](&request.Client)
 	if err != nil {
 		ctx.Status(http.StatusBadRequest)
 		return dto.ClientJoinResponse{}, err
 	}
 
-	resp := buildClientJoinResponse(ClientBonusProgram, request.ProgramID, businessID, programName, client)
+	clientBonusProgramID, TokensCount, err := clientService.Join(client, request.ProgramID)
+	if err != nil {
+		ctx.Status(http.StatusBadRequest)
+		return dto.ClientJoinResponse{}, err
+	}
+
+	resp := buildClientJoinResponse(clientBonusProgramID, request.ProgramID, TokensCount, client)
 
 	ctx.Status(http.StatusOK)
 	return resp, nil
 }
 
-func buildClientJoinResponse(clientBonusProgramID, programID, businessID int, programName string, client *domain.Client) dto.ClientJoinResponse {
+func buildClientJoinResponse(clientBonusProgramID, programID, tokensCount int, client *domain.Client) dto.ClientJoinResponse {
 	return dto.ClientJoinResponse{
-		ProgramID:   programID,
-		BusinessID:  businessID,
-		ProgramName: programName,
+		ProgramID:            programID,
+		ClientBonusProgramID: clientBonusProgramID,
+		TokensCount:          tokensCount,
 		Client: dto.ClientResponse{
 			ID:          client.ID,
 			FirstName:   client.FirstName,

@@ -16,4 +16,5 @@ type IBusinessOwnerRepository interface {
 	GetByEmail(conn abstract.IDBConnection, email string) (*domain.BusinessOwner, error)
 
 	GetByLogin(conn abstract.IDBConnection, login string) (*domain.BusinessOwner, error)
+	GetByID(conn abstract.IDBConnection, id int) (*domain.BusinessOwner, error)
 }

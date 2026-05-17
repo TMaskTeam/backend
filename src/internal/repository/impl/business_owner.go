@@ -15,6 +15,21 @@ func NewBusinessOwnerRepository() *BusinessOwnerRepository {
 	return &BusinessOwnerRepository{}
 }
 
+func (bo *BusinessOwnerRepository) GetByID(conn abstract.IDBConnection, id int) (*domain.BusinessOwner, error) {
+	db := conn.Get().(*gorm.DB)
+
+	var ownerDAO model.BusinessOwner
+	err := db.Where("owner_id = ?", id).First(&ownerDAO).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return ownerDAO.ToDomain()
+}
+
 func (bo *BusinessOwnerRepository) UpdateByID(conn abstract.IDBConnection, owner *domain.BusinessOwner) error {
 	db := conn.Get().(*gorm.DB)
 

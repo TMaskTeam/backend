@@ -100,3 +100,18 @@ func (c *ClientRepository) GetByLogin(conn abstract.IDBConnection, login string)
 
 	return clientDAO.ToDomain()
 }
+
+func (c *ClientRepository) GetByID(conn abstract.IDBConnection, id int) (*domain.Client, error) {
+	db := conn.Get().(*gorm.DB)
+
+	var clientDAO model.Client
+	err := db.Where("client_id = ?", id).First(&clientDAO).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return clientDAO.ToDomain()
+}

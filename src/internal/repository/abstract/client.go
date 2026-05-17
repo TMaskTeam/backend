@@ -14,4 +14,5 @@ type IClientRepository interface {
 	GetByEmail(conn abstract.IDBConnection, email string) (*domain.Client, error)
 
 	GetByLogin(conn abstract.IDBConnection, login string) (*domain.Client, error)
+	GetByID(conn abstract.IDBConnection, id int) (*domain.Client, error)
 }

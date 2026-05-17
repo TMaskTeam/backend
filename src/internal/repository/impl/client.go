@@ -136,7 +136,7 @@ func (c *ClientRepository) UpdateByID(conn abstract.IDBConnection, client *domai
 		return err
 	}
 
-	err = db.Model(&model.BusinessOwner{}).
+	err = db.Model(&model.Client{}).
 		Where("owner_id = ?", client.ID).
 		Updates(map[string]interface{}{
 			"first_name":    clientDAO.FirstName,

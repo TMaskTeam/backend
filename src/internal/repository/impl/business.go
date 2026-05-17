@@ -4,6 +4,7 @@ import (
 	"backend/src/internal/db/abstract"
 	"backend/src/internal/domain"
 	"backend/src/internal/model"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -65,17 +66,32 @@ func (r *BusinessRepository) GetByBusinessID(conn abstract.IDBConnection, busine
 	return businessDAO.ToDomain()
 }
 
-func (r *BusinessRepository) GetByID(conn abstract.IDBConnection, businessID int) (*domain.Business, error) {
+func (r *BusinessRepository) Update(conn abstract.IDBConnection, business *domain.Business) error {
 	db := conn.Get().(*gorm.DB)
 
-	var businessDAO model.Business
-	err := db.Where("business_id = ?", businessID).First(&businessDAO).Error
+	businessDAO, err := (&model.Business{}).ToModel(business)
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return nil, nil
-		}
-		return nil, err
+		return err
 	}
 
-	return businessDAO.ToDomain()
+	updates := map[string]interface{}{
+		"updated_at": time.Now(),
+	}
+
+	if business.Name != "" {
+		updates["name"] = business.Name
+	}
+	if business.Address != "" {
+		updates["address"] = business.Address
+	}
+
+	err = db.Model(&model.Business{}).
+		Where("business_id = ?", business.BusinessID).
+		Updates(updates).Error
+	if err != nil {
+		return err
+	}
+
+	business.BusinessID = businessDAO.BusinessID
+	return nil
 }

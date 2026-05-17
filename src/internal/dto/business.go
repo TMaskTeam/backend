@@ -21,3 +21,15 @@ type BusinessResponse struct {
 type BusinessesListResponse struct {
 	Businesses []BusinessResponse `json:"businesses"`
 }
+
+type BusinessDetailResponse struct {
+	BusinessID int    `json:"business_id"`
+	OwnerID    int    `json:"owner_id"`
+	Name       string `json:"name"`
+	Address    string `json:"address"`
+}
+
+type UpdateBusinessRequest struct {
+	Name    string `json:"name,omitempty"`
+	Address string `json:"address,omitempty"`
+}

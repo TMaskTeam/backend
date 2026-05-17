@@ -60,6 +60,7 @@ func GetMe(
 
 func Update(
 	ctx context.HandlerContext,
+	request *dto.UpdateProfileRequest,
 	ownerService abstract.IBusinessOwnerService,
 	clientService abstract.IClientService,
 ) (interface{}, error) {
@@ -82,6 +83,25 @@ func Update(
 			return nil, err
 		}
 
+		if request.FirstName != "" {
+			client.FirstName = request.FirstName
+		}
+		if request.LastName != "" {
+			client.LastName = request.LastName
+		}
+		if request.MiddleName != "" {
+			client.MiddleName = &request.MiddleName
+		}
+		if request.PhoneNumber != "" {
+			client.PhoneNumber = request.PhoneNumber
+		}
+		if request.Email != "" {
+			client.Email = request.Email
+		}
+		if request.Password != "" {
+			client.Password = request.Password
+		}
+
 		client.ID = userID
 		clientNew, err := clientService.Update(client)
 		if err != nil {
@@ -97,6 +117,25 @@ func Update(
 		owner, err := ownerService.GetByID(userID)
 		if err != nil {
 			return nil, err
+		}
+
+		if request.FirstName != "" {
+			owner.FirstName = request.FirstName
+		}
+		if request.LastName != "" {
+			owner.LastName = request.LastName
+		}
+		if request.MiddleName != "" {
+			owner.MiddleName = &request.MiddleName
+		}
+		if request.PhoneNumber != "" {
+			owner.PhoneNumber = request.PhoneNumber
+		}
+		if request.Email != "" {
+			owner.Email = request.Email
+		}
+		if request.Password != "" {
+			owner.Password = request.Password
 		}
 
 		owner.ID = userID

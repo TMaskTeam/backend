@@ -57,7 +57,7 @@ func (s *BusinessOwnerService) Update(owner *domain.BusinessOwner) (*domain.Busi
 		existing.Password = hash
 	}
 
-	return existing, s.ownerRepo.UpdateByID(s.conn, owner)
+	return existing, s.ownerRepo.UpdateByID(s.conn, existing)
 }
 
 func (s *BusinessOwnerService) Login(login, pw string) (string, time.Time, *domain.BusinessOwner, error) {

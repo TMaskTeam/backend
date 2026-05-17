@@ -107,7 +107,7 @@ func (cs *ClientService) Update(client *domain.Client) (*domain.Client, error) {
 		}
 		existing.Password = hash
 	}
-	return existing, cs.clientRepo.UpdateByID(cs.conn, client)
+	return existing, cs.clientRepo.UpdateByID(cs.conn, existing)
 }
 
 func (cs *ClientService) GetByID(id int) (*domain.Client, error) {

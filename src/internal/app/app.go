@@ -28,7 +28,9 @@ func Run() {
 
 	ownerRepo := rimpl.NewBusinessOwnerRepository()
 	clientRepo := rimpl.NewClientRepository()
+	bonusProgramRepo := rimpl.NewBonusProgramRepository()
 
+	serviceProvider.Register((*sabst.IBonusProgramService)(nil), simpl.NewBonusProgramService(conn, bonusProgramRepo))
 	serviceProvider.Register((*sabst.IBusinessOwnerService)(nil), simpl.NewBusinessOwnerService(conn, ownerRepo))
 	serviceProvider.Register((*sabst.IClientService)(nil), simpl.NewClientService(conn, clientRepo))
 
@@ -53,7 +55,18 @@ func Run() {
 	app.Get("/ping", health.PingHandler)
 
 	app.Get("/openapi.yaml", api.OpenapiYamlHandler)
-	app.Get("/api/*", api.ApiHandler())
+
+	apiV1 := app.Group("/api/v1")
+	{
+		businesses := apiV1.Group("/businesses")
+		{
+			businesses.Get("/programs", middleware.Adapt(public.GetAllBonusPrograms, serviceProvider))
+			businesses.Get("/:business_id/programs", middleware.Adapt(public.GetBonusProgramsByBusinessID, serviceProvider))
+			businesses.Post("/:business_id/programs", middleware.Adapt(public.CreateBonusProgram, serviceProvider))
+		}
+	}
+
+	//app.Get("/api/*", api.ApiHandler())
 
 	app.Post("/api/v1/auth/owner/register", middleware.Adapt(public.OwnerRegister, serviceProvider))
 	app.Post("/api/v1/auth/client/register", middleware.Adapt(public.ClientRegister, serviceProvider))

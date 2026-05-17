@@ -85,5 +85,13 @@ func (s *BusinessOwnerService) Register(owner *domain.BusinessOwner) error {
 }
 
 func (s *BusinessOwnerService) GetByID(id int) (*domain.BusinessOwner, error) {
+	exists, err := s.ownerRepo.GetByID(s.conn, id)
+	if err != nil {
+		return nil, err
+	}
+	if exists == nil {
+		return nil, errors.New("user does not exist")
+	}
 
+	return exists, nil
 }

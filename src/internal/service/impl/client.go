@@ -76,6 +76,14 @@ func (cs *ClientService) Register(newClient *domain.Client) error {
 	return nil
 }
 
-func (s *ClientService) GetByID(id int) (*domain.Client, error) {
+func (cs *ClientService) GetByID(id int) (*domain.Client, error) {
+	exists, err := cs.clientRepo.GetByID(cs.conn, id)
+	if err != nil {
+		return nil, err
+	}
+	if exists == nil {
+		return nil, errors.New("user does not exist")
+	}
 
+	return exists, nil
 }

@@ -21,3 +21,15 @@ func (m *Business) ToDomain() (*domain.Business, error) {
 func (m *Business) ToModel(domainObj *domain.Business) (*Business, error) {
 	return ToModel[Business, domain.Business](domainObj)
 }
+
+func (m *Business) ToDomainSlice(businessDAOs []Business) ([]domain.Business, error) {
+	result := make([]domain.Business, 0, len(businessDAOs))
+	for _, b := range businessDAOs {
+		domainBusiness, err := b.ToDomain()
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, *domainBusiness)
+	}
+	return result, nil
+}

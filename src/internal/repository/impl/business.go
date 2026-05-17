@@ -22,7 +22,13 @@ func (r *BusinessRepository) Create(conn abstract.IDBConnection, business *domai
 	if err != nil {
 		return err
 	}
-	return db.Save(businessDAO).Error
+	err = db.Save(businessDAO).Error
+	if err != nil {
+		return err
+	}
+
+	business.BusinessID = businessDAO.BusinessID
+	return nil
 }
 
 func (r *BusinessRepository) Delete(conn abstract.IDBConnection, businessID int) error {
@@ -30,16 +36,31 @@ func (r *BusinessRepository) Delete(conn abstract.IDBConnection, businessID int)
 	return db.Where("business_id = ?", businessID).Delete(&model.Business{}).Error
 }
 
-func (r *BusinessRepository) GetByOwnerID(conn abstract.IDBConnection, ownerID int) (*domain.Business, error) {
+func (r *BusinessRepository) GetByOwnerID(conn abstract.IDBConnection, ownerID int) ([]domain.Business, error) {
 	db := conn.Get().(*gorm.DB)
 
-	var ownerDAO model.Business
-	err := db.Where("owner_id = ?", ownerID).First(&ownerDAO).Error
+	var ownerDAOs []model.Business
+	err := db.Where("owner_id = ?", ownerID).Find(&ownerDAOs).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, nil
 		}
 		return nil, err
 	}
-	return ownerDAO.ToDomain()
+	return (&model.Business{}).ToDomainSlice(ownerDAOs)
+}
+
+func (r *BusinessRepository) GetByBusinessID(conn abstract.IDBConnection, businessID int) (*domain.Business, error) {
+	db := conn.Get().(*gorm.DB)
+
+	var businessDAO model.Business
+	err := db.Where("business_id = ?", businessID).First(&businessDAO).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return businessDAO.ToDomain()
 }

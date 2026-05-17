@@ -2,49 +2,63 @@ package public
 
 import (
 	context "backend/src/internal/context/abstract"
-	"backend/src/internal/domain"
 	"backend/src/internal/dto"
-	"backend/src/internal/model"
 	"backend/src/internal/service/abstract"
+	"errors"
 	"net/http"
+	"strconv"
 )
 
-func ClientJoin(
+func ClientJoinProgram(
 	ctx context.HandlerContext,
-	request *dto.ClientJoinRequest,
+	request *dto.ClientJoinProgramRequest,
+	clientJoinService abstract.IClientJoinService,
 	clientService abstract.IClientService,
-) (dto.ClientJoinResponse, error) {
-	client, err := model.ToDomain[dto.ClientResponse, domain.Client](&request.Client)
-	if err != nil {
-		ctx.Status(http.StatusBadRequest)
-		return dto.ClientJoinResponse{}, err
+) (interface{}, error) {
+	userID, ok := ctx.GetLocal("user_id").(int)
+	if !ok {
+		ctx.Status(http.StatusUnauthorized)
+		return nil, errors.New("unauthorized")
 	}
 
-	clientBonusProgramID, tokensCount, err := clientService.Join(client, request.ProgramID)
-	if err != nil {
-		ctx.Status(http.StatusBadRequest)
-		return dto.ClientJoinResponse{}, err
+	role, ok := ctx.GetLocal("role").(string)
+	if !ok {
+		ctx.Status(http.StatusUnauthorized)
+		return nil, errors.New("unauthorized")
 	}
 
-	resp := buildClientJoinResponse(clientBonusProgramID, request.ProgramID, tokensCount, client)
+	if role == "client" {
+		client, err := clientService.GetByID(userID)
+		if err != nil {
+			ctx.Status(http.StatusNotFound)
+			return nil, err
+		}
+		programID := ctx.Params("program_id")
+		id, err := strconv.Atoi(programID)
+		if err != nil {
+			ctx.Status(http.StatusBadRequest)
+			return dto.ClientJoinProgramResponse{}, err
+		}
 
-	ctx.Status(http.StatusOK)
-	return resp, nil
+		clientBonusProgramID, err := clientJoinService.JoinProgram(client.ID, id)
+		if err != nil {
+			ctx.Status(http.StatusBadRequest)
+			return dto.ClientJoinProgramResponse{}, err
+		}
+
+		resp := buildClientJoinProgramResponse(*clientBonusProgramID)
+
+		ctx.Status(http.StatusOK)
+		return resp, nil
+
+	} else {
+		ctx.Status(http.StatusBadRequest)
+		return nil, errors.New("unknown role")
+	}
 }
 
-func buildClientJoinResponse(clientBonusProgramID, programID, tokensCount int, client *domain.Client) dto.ClientJoinResponse {
-	return dto.ClientJoinResponse{
-		ProgramID:            programID,
+func buildClientJoinProgramResponse(clientBonusProgramID int) dto.ClientJoinProgramResponse {
+	return dto.ClientJoinProgramResponse{
 		ClientBonusProgramID: clientBonusProgramID,
-		TokensCount:          tokensCount,
-		Client: dto.ClientResponse{
-			ID:          client.ID,
-			FirstName:   client.FirstName,
-			MiddleName:  client.MiddleName,
-			LastName:    client.LastName,
-			PhoneNumber: client.PhoneNumber,
-			Email:       client.Email,
-			Birthday:    client.Birthday,
-		},
 	}
 }

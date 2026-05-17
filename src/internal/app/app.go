@@ -28,9 +28,11 @@ func Run() {
 
 	ownerRepo := rimpl.NewBusinessOwnerRepository()
 	clientRepo := rimpl.NewClientRepository()
+	clientBonusProgramRepo := rimpl.NewClientBonusProgramRepository()
 
 	serviceProvider.Register((*sabst.IBusinessOwnerService)(nil), simpl.NewBusinessOwnerService(conn, ownerRepo))
 	serviceProvider.Register((*sabst.IClientService)(nil), simpl.NewClientService(conn, clientRepo))
+	serviceProvider.Register((*sabst.IClientJoinService)(nil), simpl.NewClientJoinService(conn, clientBonusProgramRepo))
 
 	app := fiber.New(fiber.Config{
 		EnableSplittingOnParsers: true,
@@ -62,6 +64,8 @@ func Run() {
 
 	app.Get("/api/v1/me", middleware.Auth(), middleware.Adapt(public.GetMe, serviceProvider))
 	app.Put("/api/v1/me", middleware.Auth(), middleware.Adapt(public.Update, serviceProvider))
+
+	app.Post("/api/v1/programs/:program_id/participants", middleware.Adapt(public.ClientJoinProgram, serviceProvider))
 
 	app.Get("/api/*", api.ApiHandler())
 

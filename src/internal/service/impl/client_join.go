@@ -4,7 +4,6 @@ import (
 	connection "backend/src/internal/db/abstract"
 	"backend/src/internal/domain"
 	repository "backend/src/internal/repository/abstract"
-	"backend/src/pkg/password"
 	"errors"
 )
 
@@ -23,26 +22,23 @@ func NewClientJoinService(
 	}
 }
 
-func (cs *ClientJoinService) Join(client *domain.Client, programID int) (int, int, error) {
-	hash, err := cs.clientBonusProgramRepo.GetByProgramID(cs.conn, client.ID)
+func (cjs *ClientJoinService) JoinProgram(clientID int, programID int) (*int, error) {
+	clientBonusProgram, err := cjs.clientBonusProgramRepo.GetByClientID(cjs.conn, clientID)
 	if err != nil {
-		return -1, -1, errors.New("this client does not exists")
+		if clientBonusProgram == nil {
+			return nil, errors.New("client already in bonus program")
+		}
+		return nil, err
 	}
 
-	if err := password.CheckHash(hash, client.Password); err != nil {
-		return -1, -1, errors.New("invalid credentials")
+	newClientBonusProgram := &domain.ClientBonusProgram{
+		ProgramID:   programID,
+		ClientID:    clientID,
+		TokensCount: 0,
 	}
-
-	existClientBonusProgram, err := cs.clientBonusProgramRepo.GetByClientID(cs.conn, client.ID)
-	if existClientBonusProgram != nil {
-		return existClientBonusProgram.ID, existClientBonusProgram.TokensCount, nil
-	}
-
-	newClientBonusProgram := &domain.ClientBonusProgram{}
-	err = cs.clientBonusProgramRepo.Upsert(cs.conn, newClientBonusProgram)
+	err = cjs.clientBonusProgramRepo.Upsert(cjs.conn, newClientBonusProgram)
 	if err != nil {
-		return -1, -1, err
+		return nil, err
 	}
-
-	return newClientBonusProgram.ID, 0, nil
+	return &newClientBonusProgram.ID, nil
 }

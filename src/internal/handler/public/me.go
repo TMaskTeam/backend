@@ -82,6 +82,7 @@ func Update(
 			return nil, err
 		}
 
+		client.ID = userID
 		err = clientService.Update(client)
 		if err != nil {
 			return nil, err
@@ -98,6 +99,7 @@ func Update(
 			return nil, err
 		}
 
+		owner.ID = userID
 		err = ownerService.Update(owner)
 		if err != nil {
 			return nil, err

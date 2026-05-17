@@ -780,6 +780,113 @@ Cookie: token=<JWT_TOKEN>
 
 ---
 
+
+#### GET /programs/{program_id}/participants — Список участников программы
+
+**Request:** (требует авторизации — владелец бизнеса)
+```
+GET /api/v1/programs/1/participants
+Cookie: token=<JWT_TOKEN>
+```
+
+**Response (200 OK):**
+```json
+{
+    "participants": [
+        {
+            "client_id": 1,
+            "first_name": "Анна",
+            "last_name": "Сидорова",
+            "phone_number": "+79009999999",
+            "balance": 125,
+            "total_visits": 23,
+            "joined_at": "2025-05-17T10:30:00Z"
+        }
+    ],
+    "total": 1
+}
+```
+
+---
+
+#### GET /programs/{program_id}/participants/{client_id} — Данные участника в программе
+
+**Request:** (требует авторизации — владелец бизнеса)
+```
+GET /api/v1/programs/1/participants/1
+Cookie: token=<JWT_TOKEN>
+```
+
+**Response (200 OK):**
+```json
+{
+    "client_id": 1,
+    "first_name": "Анна",
+    "last_name": "Сидорова",
+    "phone_number": "+79009999999",
+    "balance": 125,
+    "total_earned": 450,
+    "total_spent": 325,
+    "total_visits": 23,
+    "joined_at": "2025-05-17T10:30:00Z",
+    "last_visit_at": "2025-05-17T15:30:00Z"
+}
+```
+
+---
+
+#### POST /loyalty/earn — Начислить токены
+
+**Request:** (требует авторизации — webhook)
+```json
+{
+    "client_id": 1,
+    "program_id": 1,
+    "ruble_amount": 500,
+    "description": "Оплата в кафе"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+    "transaction_id": 1,
+    "client_id": 1,
+    "program_id": 1,
+    "amount": 25,
+    "new_balance": 150,
+    "description": "Оплата 500₽, начислено 25 кофеинов"
+}
+```
+
+---
+
+#### POST /loyalty/spend — Списать токены
+
+**Request:** (требует авторизации — клиент)
+```json
+{
+    "client_id": 1,
+    "program_id": 1,
+    "tokens": 50,
+    "description": "Скидка 50₽ на чек"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+    "transaction_id": 2,
+    "client_id": 1,
+    "program_id": 1,
+    "amount": -50,
+    "new_balance": 100,
+    "description": "Списано 50 кофеинов"
+}
+```
+
+---
+
 ### Формат ошибки
 
 ```json

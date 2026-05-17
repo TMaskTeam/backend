@@ -91,19 +91,19 @@ func ClientJoin(
 	request *dto.ClientJoinRequest,
 	clientService abstract.IClientService,
 ) (dto.ClientJoinResponse, error) {
-	programID, businessID, programName, client, err := clientService.Join(request.Login, request.Password)
+	clientBonusProgramID, TokensCount, err := clientService.Join(request.Client, request.ProgramID)
 	if err != nil {
 		ctx.Status(http.StatusBadRequest)
 		return dto.ClientJoinResponse{}, err
 	}
 
-	resp := buildClientJoinResponse(programID, businessID, programName, client)
+	resp := buildClientJoinResponse(ClientBonusProgram, request.ProgramID, businessID, programName, client)
 
 	ctx.Status(http.StatusOK)
 	return resp, nil
 }
 
-func buildClientJoinResponse(programID int, businessID int, programName string, client *domain.Client) dto.ClientJoinResponse {
+func buildClientJoinResponse(clientBonusProgramID, programID, businessID int, programName string, client *domain.Client) dto.ClientJoinResponse {
 	return dto.ClientJoinResponse{
 		ProgramID:   programID,
 		BusinessID:  businessID,

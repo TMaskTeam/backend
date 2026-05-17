@@ -3,16 +3,15 @@ package dto
 import "time"
 
 type ClientJoinRequest struct {
-	Login    string `json:"login" validate:"required"`
-	Password string `json:"password" validate:"required"`
+	Client    ClientResponse `json:"client"`
+	ProgramID int            `json:"program_id"`
 }
 
 type ClientJoinResponse struct {
-	ProgramID   int            `json:"program_id"`
-	BusinessID  int            `json:"business_id"`
-	ProgramName string         `json:"program_name"`
-	TokenName   string         `json:"token_name"`
-	Client      ClientResponse `json:"client"`
+	Client               ClientResponse `json:"client"`
+	ClientBonusProgramID int            `json:"client_bonus_program_id"`
+	ProgramID            int            `json:"program_id"`
+	TokensCount          int            `json:"tokens_count"`
 }
 
 type ClientLoginRequest struct {

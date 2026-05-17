@@ -7,4 +7,5 @@ type HandlerContext interface {
 	Status(status int) HandlerContext
 	BindJSON(data any) error
 	SetCookie(name, value string, expiresAt time.Time, httpOnly, secure bool)
+	GetLocal(key string) any
 }

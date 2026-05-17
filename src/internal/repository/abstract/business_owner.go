@@ -6,6 +6,7 @@ import (
 )
 
 type IBusinessOwnerRepository interface {
+	UpdateByID(conn abstract.IDBConnection, owner *domain.BusinessOwner) error
 	Upsert(conn abstract.IDBConnection, owner *domain.BusinessOwner) error
 	Delete(conn abstract.IDBConnection, ownerID int) error
 

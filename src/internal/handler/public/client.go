@@ -58,13 +58,13 @@ func ClientLogin(
 	request *dto.ClientLoginRequest,
 	clientService abstract.IClientService,
 ) (dto.ClientLoginResponse, error) {
-	token, expiresAt, owner, err := clientService.Login(request.Login, request.Password)
+	token, expiresAt, client, err := clientService.Login(request.Login, request.Password)
 	if err != nil {
 		ctx.Status(http.StatusBadRequest)
 		return dto.ClientLoginResponse{}, err
 	}
 
-	resp := buildClientLoginResponse(token, expiresAt, owner)
+	resp := buildClientLoginResponse(token, expiresAt, client)
 
 	ctx.Status(http.StatusOK)
 	return resp, nil

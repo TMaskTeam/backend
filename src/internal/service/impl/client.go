@@ -75,3 +75,7 @@ func (cs *ClientService) Register(newClient *domain.Client) error {
 
 	return nil
 }
+
+func (s *ClientService) GetByID(id int) (*domain.Client, error) {
+
+}

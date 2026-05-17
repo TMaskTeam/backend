@@ -19,7 +19,7 @@ func Auth() fiber.Handler {
 
 		ownerID, role, err := jwt.ValidateToken(token)
 		if err != nil {
-			return fiberCtx.Status(401).JSON(fiber.Map{"error": "invalid token"})
+			return fiberCtx.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "invalid token"})
 		}
 
 		fiberCtx.Locals("user_id", ownerID)

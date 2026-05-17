@@ -43,14 +43,10 @@ func (s *BusinessOwnerService) Login(login, pw string) (string, time.Time, *doma
 		return "", time.Time{}, nil, errors.New("invalid credentials")
 	}
 
-	// 4. Генерируем JWT токен
 	token, expiresAt, err := jwt.GenerateToken(owner.ID, "business_owner")
 	if err != nil {
 		return "", time.Time{}, nil, err
 	}
-
-	// 5. Очищаем пароль из ответа
-	owner.Password = ""
 
 	return token, expiresAt, owner, nil
 }
@@ -86,4 +82,8 @@ func (s *BusinessOwnerService) Register(owner *domain.BusinessOwner) error {
 	}
 
 	return nil
+}
+
+func (s *BusinessOwnerService) GetByID(id int) (*domain.BusinessOwner, error) {
+
 }

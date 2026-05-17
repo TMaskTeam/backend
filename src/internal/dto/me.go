@@ -23,8 +23,6 @@ type ClientMeResponse struct {
 	PhoneNumber string    `json:"phone_number"`
 	Email       string    `json:"email"`
 	Birthday    time.Time `json:"birthday"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 type UpdateProfileRequest struct {

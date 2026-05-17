@@ -4,6 +4,7 @@ import (
 	"backend/src/internal/db/abstract"
 	"backend/src/internal/domain"
 	"backend/src/internal/model"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -12,6 +13,28 @@ type BusinessOwnerRepository struct{}
 
 func NewBusinessOwnerRepository() *BusinessOwnerRepository {
 	return &BusinessOwnerRepository{}
+}
+
+func (bo *BusinessOwnerRepository) UpdateByID(conn abstract.IDBConnection, owner *domain.BusinessOwner) error {
+	db := conn.Get().(*gorm.DB)
+
+	ownerDAO := &model.BusinessOwner{}
+	ownerDAO, err := ownerDAO.ToModel(owner)
+	if err != nil {
+		return err
+	}
+
+	return db.Model(&model.BusinessOwner{}).
+		Where("owner_id = ?", owner.ID).
+		Updates(map[string]interface{}{
+			"first_name":    ownerDAO.FirstName,
+			"last_name":     ownerDAO.LastName,
+			"middle_name":   ownerDAO.MiddleName,
+			"phone_number":  ownerDAO.PhoneNumber,
+			"email":         ownerDAO.Email,
+			"password_hash": ownerDAO.PasswordHash,
+			"updated_at":    time.Now(),
+		}).Error
 }
 
 func (bo *BusinessOwnerRepository) Upsert(conn abstract.IDBConnection, owner *domain.BusinessOwner) error {

@@ -24,6 +24,10 @@ func (fiberAdapter *FiberCtxAdapter) BindJSON(data any) error {
 	return fiberAdapter.Ctx.Bind().JSON(data)
 }
 
+func (fiberAdapter *FiberCtxAdapter) GetLocal(key string) any {
+	return fiberAdapter.Ctx.Locals(key)
+}
+
 func (fiberAdapter *FiberCtxAdapter) SetCookie(name, value string, expiresAt time.Time, httpOnly, secure bool) {
 	fiberAdapter.Ctx.Cookie(&fiber.Cookie{
 		Name:     name,

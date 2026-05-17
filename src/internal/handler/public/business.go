@@ -193,29 +193,29 @@ func UpdateBusiness(
 func DeleteBusinessByID(
 	ctx context.HandlerContext,
 	businessService abstract.IBusinessService,
-) (interface{}, error) {
+) error {
 
 	ownerID, ok := ctx.GetLocal("user_id").(int)
 	if !ok {
 		ctx.Status(http.StatusUnauthorized)
-		return nil, errors.New("unauthorized")
+		return errors.New("unauthorized")
 	}
 
 	businessIDStr := ctx.Params("business_id")
 	businessID, err := strconv.Atoi(businessIDStr)
 	if err != nil {
 		ctx.Status(http.StatusBadRequest)
-		return nil, errors.New("invalid business_id")
+		return errors.New("invalid business_id")
 	}
 
 	err = businessService.Delete(businessID, ownerID)
 	if err != nil {
 		ctx.Status(http.StatusNotFound)
-		return nil, err
+		return err
 	}
 
 	ctx.Status(http.StatusNoContent)
-	return nil, nil
+	return nil
 }
 
 func buildBusinessDetailResponse(business *domain.Business) dto.BusinessDetailResponse {

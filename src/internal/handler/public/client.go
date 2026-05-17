@@ -81,5 +81,4 @@ func buildClientLoginResponse(client *domain.Client) dto.ClientResponse {
 		Email:       client.Email,
 		Birthday:    client.Birthday,
 	}
-
 }

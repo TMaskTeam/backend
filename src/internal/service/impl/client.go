@@ -11,9 +11,8 @@ import (
 )
 
 type ClientService struct {
-	conn                   connection.IDBConnection
-	clientRepo             repository.IClientRepository
-	clientBonusProgramRepo repository.IClientBonusProgramRepository
+	conn       connection.IDBConnection
+	clientRepo repository.IClientRepository
 }
 
 func NewClientService(

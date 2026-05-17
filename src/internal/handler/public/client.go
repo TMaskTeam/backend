@@ -57,31 +57,29 @@ func ClientLogin(
 	ctx context.HandlerContext,
 	request *dto.ClientLoginRequest,
 	clientService abstract.IClientService,
-) (dto.ClientLoginResponse, error) {
+) (dto.ClientResponse, error) {
 	token, expiresAt, client, err := clientService.Login(request.Login, request.Password)
 	if err != nil {
 		ctx.Status(http.StatusBadRequest)
-		return dto.ClientLoginResponse{}, err
+		return dto.ClientResponse{}, err
 	}
 
-	resp := buildClientLoginResponse(token, expiresAt, client)
+	ctx.SetCookie("token", token, expiresAt, true, false)
+	resp := buildClientLoginResponse(client)
 
 	ctx.Status(http.StatusOK)
 	return resp, nil
 }
 
-func buildClientLoginResponse(token string, expiresAt time.Time, client *domain.Client) dto.ClientLoginResponse {
-	return dto.ClientLoginResponse{
-		Token:     token,
-		ExpiresAt: expiresAt,
-		Owner: dto.ClientResponse{
-			ID:          client.ID,
-			FirstName:   client.FirstName,
-			MiddleName:  client.MiddleName,
-			LastName:    client.LastName,
-			PhoneNumber: client.PhoneNumber,
-			Email:       client.Email,
-			Birthday:    client.Birthday,
-		},
+func buildClientLoginResponse(client *domain.Client) dto.ClientResponse {
+	return dto.ClientResponse{
+		ID:          client.ID,
+		FirstName:   client.FirstName,
+		MiddleName:  client.MiddleName,
+		LastName:    client.LastName,
+		PhoneNumber: client.PhoneNumber,
+		Email:       client.Email,
+		Birthday:    client.Birthday,
 	}
+
 }

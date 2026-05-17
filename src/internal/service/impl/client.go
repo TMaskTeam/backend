@@ -43,7 +43,7 @@ func (s *ClientService) Login(login, pw string) (string, time.Time, *domain.Clie
 		return "", time.Time{}, nil, errors.New("invalid credentials")
 	}
 
-	token, expiresAt, err := jwt.GenerateToken(client.ID, "business_owner")
+	token, expiresAt, err := jwt.GenerateToken(client.ID, "client")
 	if err != nil {
 		return "", time.Time{}, nil, err
 	}

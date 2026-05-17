@@ -11,4 +11,6 @@ type IClientService interface {
 
 	GetByID(id int) (*domain.Client, error)
 	Update(client *domain.Client) (*domain.Client, error)
+
+	GetAllPrograms() ([]*domain.BonusProgram, error)
 }

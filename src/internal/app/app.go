@@ -78,6 +78,7 @@ func Run() {
 	app.Get("/api/v1/businesses", middleware.Auth(), middleware.Adapt(public.GetAllBusinesses, serviceProvider))
 	app.Delete("/api/v1/businesses/:business_id", middleware.Auth(), middleware.Adapt(public.DeleteBusiness, serviceProvider))
 	app.Post("/api/v1/programs/:program_id/join", middleware.Adapt(public.ClientJoinProgram, serviceProvider))
+	app.Post("/api/v1/client/programs", middleware.Adapt(public.GetClientPrograms, serviceProvider))
 
 	app.Get("/api/*", api.ApiHandler())
 

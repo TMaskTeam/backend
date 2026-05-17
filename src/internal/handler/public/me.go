@@ -83,12 +83,12 @@ func Update(
 		}
 
 		client.ID = userID
-		err = clientService.Update(client)
+		clientNew, err := clientService.Update(client)
 		if err != nil {
 			return nil, err
 		}
 
-		resp := buildClientMeResponse(role, client)
+		resp := buildClientMeResponse(role, clientNew)
 
 		ctx.Status(http.StatusOK)
 		return resp, nil
@@ -100,12 +100,12 @@ func Update(
 		}
 
 		owner.ID = userID
-		err = ownerService.Update(owner)
+		ownerNew, err := ownerService.Update(owner)
 		if err != nil {
 			return nil, err
 		}
 
-		resp := buildOwnerMeResponse(role, owner)
+		resp := buildOwnerMeResponse(role, ownerNew)
 
 		ctx.Status(http.StatusOK)
 		return resp, nil

@@ -25,15 +25,39 @@ func NewBusinessOwnerService(
 	}
 }
 
-func (s *BusinessOwnerService) Update(owner *domain.BusinessOwner) error {
+func (s *BusinessOwnerService) Update(owner *domain.BusinessOwner) (*domain.BusinessOwner, error) {
+	existing, err := s.ownerRepo.GetByID(s.conn, owner.ID)
+	if err != nil {
+		return nil, err
+	}
+	if existing == nil {
+		return nil, errors.New("user not found")
+	}
+
+	if owner.FirstName != "" {
+		existing.FirstName = owner.FirstName
+	}
+	if owner.LastName != "" {
+		existing.LastName = owner.LastName
+	}
+	if owner.MiddleName != nil {
+		existing.MiddleName = owner.MiddleName
+	}
+	if owner.PhoneNumber != "" {
+		existing.PhoneNumber = owner.PhoneNumber
+	}
+	if owner.Email != "" {
+		existing.Email = owner.Email
+	}
 	if owner.Password != "" {
 		hash, err := password.Hash(owner.Password)
 		if err != nil {
-			return err
+			return nil, err
 		}
-		owner.Password = hash
+		existing.Password = hash
 	}
-	return s.ownerRepo.UpdateByID(s.conn, owner)
+
+	return existing, s.ownerRepo.UpdateByID(s.conn, owner)
 }
 
 func (s *BusinessOwnerService) Login(login, pw string) (string, time.Time, *domain.BusinessOwner, error) {

@@ -76,15 +76,38 @@ func (cs *ClientService) Register(newClient *domain.Client) error {
 	return nil
 }
 
-func (cs *ClientService) Update(client *domain.Client) error {
+func (cs *ClientService) Update(client *domain.Client) (*domain.Client, error) {
+	existing, err := cs.clientRepo.GetByID(cs.conn, client.ID)
+	if err != nil {
+		return nil, err
+	}
+	if existing == nil {
+		return nil, errors.New("user not found")
+	}
+
+	if client.FirstName != "" {
+		existing.FirstName = client.FirstName
+	}
+	if client.LastName != "" {
+		existing.LastName = client.LastName
+	}
+	if client.MiddleName != nil {
+		existing.MiddleName = client.MiddleName
+	}
+	if client.PhoneNumber != "" {
+		existing.PhoneNumber = client.PhoneNumber
+	}
+	if client.Email != "" {
+		existing.Email = client.Email
+	}
 	if client.Password != "" {
 		hash, err := password.Hash(client.Password)
 		if err != nil {
-			return err
+			return nil, err
 		}
-		client.Password = hash
+		existing.Password = hash
 	}
-	return cs.clientRepo.UpdateByID(cs.conn, client)
+	return existing, cs.clientRepo.UpdateByID(cs.conn, client)
 }
 
 func (cs *ClientService) GetByID(id int) (*domain.Client, error) {

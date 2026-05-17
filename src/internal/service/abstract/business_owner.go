@@ -10,5 +10,5 @@ type IBusinessOwnerService interface {
 	Register(owner *domain.BusinessOwner) error
 
 	GetByID(id int) (*domain.BusinessOwner, error)
-	Update(owner *domain.BusinessOwner) error
+	Update(owner *domain.BusinessOwner) (*domain.BusinessOwner, error)
 }

@@ -71,3 +71,30 @@ func (r *BonusProgramRepository) GetAll(conn abstract.IDBConnection) ([]*domain.
 
 	return result, nil
 }
+
+func (r *BonusProgramRepository) GetByProgramID(conn abstract.IDBConnection, programID int) (*domain.BonusProgram, error) {
+	db := conn.Get().(*gorm.DB)
+
+	var bonusProgramDAO model.BonusProgram
+	err := db.Where("program_id = ?", programID).First(&bonusProgramDAO).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return bonusProgramDAO.ToDomain()
+}
+
+func (r *BonusProgramRepository) Update(conn abstract.IDBConnection, program *domain.BonusProgram) error {
+	db := conn.Get().(*gorm.DB)
+
+	programDAO := &model.BonusProgram{}
+	programDAO, err := programDAO.ToModel(program)
+	if err != nil {
+		return err
+	}
+
+	return db.Save(programDAO).Error
+}

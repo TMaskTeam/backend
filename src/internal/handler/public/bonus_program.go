@@ -11,8 +11,8 @@ import (
 func CreateBonusProgram(
 	ctx context.HandlerContext,
 	bonusProgramService abstract.IBonusProgramService,
-) (interface{}, error) {
-	businessID, err := strconv.Atoi(ctx.Get("business_id"))
+) (*dto.BonusProgramResponse, error) {
+	businessID, err := strconv.Atoi(ctx.Param("business_id"))
 	if err != nil {
 		ctx.Status(http.StatusBadRequest)
 		return nil, err
@@ -30,22 +30,17 @@ func CreateBonusProgram(
 		return nil, err
 	}
 
-	resp := dto.BonusProgramResponse{
-		ProgramID:   program.ProgramID,
-		BusinessID:  program.BusinessID,
-		ProgramName: program.ProgramName,
-		TokenName:   program.TokenName,
-	}
+	resp := dto.ToBonusProgramResponse(program)
 
 	ctx.Status(http.StatusCreated)
-	return resp, nil
+	return &resp, nil
 }
 
 func GetBonusProgramsByBusinessID(
 	ctx context.HandlerContext,
 	bonusProgramService abstract.IBonusProgramService,
-) (interface{}, error) {
-	businessID, err := strconv.Atoi(ctx.Get("business_id"))
+) ([]dto.BonusProgramResponse, error) {
+	businessID, err := strconv.Atoi(ctx.Param("business_id"))
 	if err != nil {
 		ctx.Status(http.StatusBadRequest)
 		return nil, err
@@ -57,15 +52,7 @@ func GetBonusProgramsByBusinessID(
 		return nil, err
 	}
 
-	resp := make([]dto.BonusProgramResponse, 0, len(programs))
-	for _, p := range programs {
-		resp = append(resp, dto.BonusProgramResponse{
-			ProgramID:   p.ProgramID,
-			BusinessID:  p.BusinessID,
-			ProgramName: p.ProgramName,
-			TokenName:   p.TokenName,
-		})
-	}
+	resp := dto.ToBonusProgramResponseList(programs)
 
 	ctx.Status(http.StatusOK)
 	return resp, nil
@@ -74,22 +61,14 @@ func GetBonusProgramsByBusinessID(
 func GetAllBonusPrograms(
 	ctx context.HandlerContext,
 	bonusProgramService abstract.IBonusProgramService,
-) (interface{}, error) {
+) ([]dto.BonusProgramResponse, error) {
 	programs, err := bonusProgramService.GetAll()
 	if err != nil {
 		ctx.Status(http.StatusInternalServerError)
 		return nil, err
 	}
 
-	resp := make([]dto.BonusProgramResponse, 0, len(programs))
-	for _, p := range programs {
-		resp = append(resp, dto.BonusProgramResponse{
-			ProgramID:   p.ProgramID,
-			BusinessID:  p.BusinessID,
-			ProgramName: p.ProgramName,
-			TokenName:   p.TokenName,
-		})
-	}
+	resp := dto.ToBonusProgramResponseList(programs)
 
 	ctx.Status(http.StatusOK)
 	return resp, nil

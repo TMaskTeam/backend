@@ -56,15 +56,9 @@ func Run() {
 
 	app.Get("/openapi.yaml", api.OpenapiYamlHandler)
 
-	apiV1 := app.Group("/api/v1")
-	{
-		businesses := apiV1.Group("/businesses")
-		{
-			businesses.Get("/programs", middleware.Adapt(public.GetAllBonusPrograms, serviceProvider))
-			businesses.Get("/:business_id/programs", middleware.Adapt(public.GetBonusProgramsByBusinessID, serviceProvider))
-			businesses.Post("/:business_id/programs", middleware.Adapt(public.CreateBonusProgram, serviceProvider))
-		}
-	}
+	app.Get("/api/v1/programs", middleware.Adapt(public.GetAllBonusPrograms, serviceProvider))
+	app.Get("/api/v1/:business_id/programs", middleware.Adapt(public.GetBonusProgramsByBusinessID, serviceProvider))
+	app.Post("/api/v1/:business_id/programs", middleware.Auth(), middleware.Adapt(public.CreateBonusProgram, serviceProvider))
 
 	app.Get("/api/*", api.ApiHandler())
 

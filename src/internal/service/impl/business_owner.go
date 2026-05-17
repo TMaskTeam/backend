@@ -25,6 +25,17 @@ func NewBusinessOwnerService(
 	}
 }
 
+func (s *BusinessOwnerService) Update(owner *domain.BusinessOwner) error {
+	if owner.Password != "" {
+		hash, err := password.Hash(owner.Password)
+		if err != nil {
+			return err
+		}
+		owner.Password = hash
+	}
+	return s.ownerRepo.UpdateByID(s.conn, owner)
+}
+
 func (s *BusinessOwnerService) Login(login, pw string) (string, time.Time, *domain.BusinessOwner, error) {
 	owner, err := s.ownerRepo.GetByLogin(s.conn, login)
 	if err != nil {

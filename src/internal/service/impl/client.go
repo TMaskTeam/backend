@@ -76,6 +76,17 @@ func (cs *ClientService) Register(newClient *domain.Client) error {
 	return nil
 }
 
+func (cs *ClientService) Update(client *domain.Client) error {
+	if client.Password != "" {
+		hash, err := password.Hash(client.Password)
+		if err != nil {
+			return err
+		}
+		client.Password = hash
+	}
+	return cs.clientRepo.UpdateByID(cs.conn, client)
+}
+
 func (cs *ClientService) GetByID(id int) (*domain.Client, error) {
 	exists, err := cs.clientRepo.GetByID(cs.conn, id)
 	if err != nil {

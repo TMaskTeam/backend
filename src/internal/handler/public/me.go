@@ -6,7 +6,6 @@ import (
 	"backend/src/internal/dto"
 	"backend/src/internal/service/abstract"
 	"errors"
-	"log"
 	"net/http"
 )
 
@@ -15,7 +14,6 @@ func GetMe(
 	ownerService abstract.IBusinessOwnerService,
 	clientService abstract.IClientService,
 ) (interface{}, error) {
-	log.Println("=== GetMe called ===") // ← добавить
 	userID, ok := ctx.GetLocal("user_id").(int)
 	if !ok {
 		ctx.Status(http.StatusUnauthorized)
@@ -46,6 +44,63 @@ func GetMe(
 		if err != nil {
 			ctx.Status(http.StatusNotFound)
 			return nil, errors.New("owner not found")
+		}
+
+		resp := buildOwnerMeResponse(role, owner)
+
+		ctx.Status(http.StatusOK)
+		return resp, nil
+
+	default:
+		ctx.Status(http.StatusBadRequest)
+		return nil, errors.New("unknown role")
+	}
+
+}
+
+func Update(
+	ctx context.HandlerContext,
+	ownerService abstract.IBusinessOwnerService,
+	clientService abstract.IClientService,
+) (interface{}, error) {
+	userID, ok := ctx.GetLocal("user_id").(int)
+	if !ok {
+		ctx.Status(http.StatusUnauthorized)
+		return nil, errors.New("unauthorized")
+	}
+
+	role, ok := ctx.GetLocal("role").(string)
+	if !ok {
+		ctx.Status(http.StatusUnauthorized)
+		return nil, errors.New("unauthorized")
+	}
+
+	switch role {
+	case "client":
+		client, err := clientService.GetByID(userID)
+		if err != nil {
+			return nil, err
+		}
+
+		err = clientService.Update(client)
+		if err != nil {
+			return nil, err
+		}
+
+		resp := buildClientMeResponse(role, client)
+
+		ctx.Status(http.StatusOK)
+		return resp, nil
+
+	case "business_owner":
+		owner, err := ownerService.GetByID(userID)
+		if err != nil {
+			return nil, err
+		}
+
+		err = ownerService.Update(owner)
+		if err != nil {
+			return nil, err
 		}
 
 		resp := buildOwnerMeResponse(role, owner)

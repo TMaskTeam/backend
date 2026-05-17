@@ -4,6 +4,7 @@ import (
 	"backend/src/internal/db/abstract"
 	"backend/src/internal/domain"
 	"backend/src/internal/model"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -12,6 +13,49 @@ type BusinessOwnerRepository struct{}
 
 func NewBusinessOwnerRepository() *BusinessOwnerRepository {
 	return &BusinessOwnerRepository{}
+}
+
+func (bo *BusinessOwnerRepository) GetByID(conn abstract.IDBConnection, id int) (*domain.BusinessOwner, error) {
+	db := conn.Get().(*gorm.DB)
+
+	var ownerDAO model.BusinessOwner
+	err := db.Where("owner_id = ?", id).First(&ownerDAO).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return ownerDAO.ToDomain()
+}
+
+func (bo *BusinessOwnerRepository) UpdateByID(conn abstract.IDBConnection, owner *domain.BusinessOwner) error {
+	db := conn.Get().(*gorm.DB)
+
+	ownerDAO := &model.BusinessOwner{}
+	ownerDAO, err := ownerDAO.ToModel(owner)
+	if err != nil {
+		return err
+	}
+
+	err = db.Model(&model.BusinessOwner{}).
+		Where("owner_id = ?", owner.ID).
+		Updates(map[string]interface{}{
+			"first_name":    ownerDAO.FirstName,
+			"last_name":     ownerDAO.LastName,
+			"middle_name":   ownerDAO.MiddleName,
+			"phone_number":  ownerDAO.PhoneNumber,
+			"email":         ownerDAO.Email,
+			"password_hash": ownerDAO.PasswordHash,
+			"updated_at":    time.Now(),
+		}).Error
+	if err != nil {
+		return err
+	}
+
+	owner.ID = ownerDAO.ID
+	return nil
 }
 
 func (bo *BusinessOwnerRepository) Upsert(conn abstract.IDBConnection, owner *domain.BusinessOwner) error {
@@ -29,10 +73,20 @@ func (bo *BusinessOwnerRepository) Upsert(conn abstract.IDBConnection, owner *do
 
 	if err == nil {
 		ownerDAO.ID = existing.ID
-		return db.Save(ownerDAO).Error
+		err = db.Save(ownerDAO).Error
+		if err != nil {
+			return err
+		}
+		owner.ID = ownerDAO.ID
+		return nil
 	}
 
-	return db.Create(ownerDAO).Error
+	err = db.Create(ownerDAO).Error
+	if err != nil {
+		return err
+	}
+	owner.ID = ownerDAO.ID
+	return nil
 }
 
 func (bo *BusinessOwnerRepository) Delete(conn abstract.IDBConnection, ownerID int) error {

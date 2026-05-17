@@ -35,13 +35,13 @@ func OwnerRegister(
 		ctx.Status(http.StatusConflict)
 		return dto.BusinessOwnerResponse{}, err
 	}
-	resp := buildBusinessOwnerRegisterResponse(owner)
+	resp := buildBusinessOwnerResponse(owner)
 
 	ctx.Status(http.StatusOK)
 	return resp, nil
 }
 
-func buildBusinessOwnerRegisterResponse(createdOwner *domain.BusinessOwner) dto.BusinessOwnerResponse {
+func buildBusinessOwnerResponse(createdOwner *domain.BusinessOwner) dto.BusinessOwnerResponse {
 	return dto.BusinessOwnerResponse{
 		ID:          createdOwner.ID,
 		FirstName:   createdOwner.FirstName,
@@ -58,32 +58,16 @@ func OwnerLogin(
 	ctx context.HandlerContext,
 	request *dto.BusinessOwnerLoginRequest,
 	ownerService abstract.IBusinessOwnerService,
-) (dto.BusinessOwnerLoginResponse, error) {
+) (dto.BusinessOwnerResponse, error) {
 	token, expiresAt, owner, err := ownerService.Login(request.Login, request.Password)
 	if err != nil {
 		ctx.Status(http.StatusBadRequest)
-		return dto.BusinessOwnerLoginResponse{}, err
+		return dto.BusinessOwnerResponse{}, err
 	}
 
-	resp := buildBusinessOwnerLoginResponse(token, expiresAt, owner)
+	ctx.SetCookie("token", token, expiresAt, true, false)
+	resp := buildBusinessOwnerResponse(owner)
 
 	ctx.Status(http.StatusOK)
 	return resp, nil
-}
-
-func buildBusinessOwnerLoginResponse(token string, expiresAt time.Time, owner *domain.BusinessOwner) dto.BusinessOwnerLoginResponse {
-	return dto.BusinessOwnerLoginResponse{
-		Token:     token,
-		ExpiresAt: expiresAt,
-		Owner: dto.BusinessOwnerResponse{
-			ID:          owner.ID,
-			FirstName:   owner.FirstName,
-			MiddleName:  owner.MiddleName,
-			LastName:    owner.LastName,
-			INN:         owner.INN,
-			PhoneNumber: owner.PhoneNumber,
-			Email:       owner.Email,
-			Birthday:    owner.Birthday,
-		},
-	}
 }

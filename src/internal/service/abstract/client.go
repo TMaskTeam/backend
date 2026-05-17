@@ -8,4 +8,7 @@ import (
 type IClientService interface {
 	Login(login, password string) (string, time.Time, *domain.Client, error)
 	Register(client *domain.Client) error
+
+	GetByID(id int) (*domain.Client, error)
+	Update(client *domain.Client) (*domain.Client, error)
 }

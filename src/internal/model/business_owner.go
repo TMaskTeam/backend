@@ -30,9 +30,12 @@ func (modelObj *BusinessOwner) ToModel(domainObj *domain.BusinessOwner) (*Busine
 		return nil, err
 	}
 
-	hashedPassword, err := password.Hash(domainObj.Password)
-	if err != nil {
-		return nil, err
+	var hashedPassword string
+	if domainObj.Password != "" {
+		hashedPassword, err = password.Hash(domainObj.Password)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	model.PasswordHash = hashedPassword

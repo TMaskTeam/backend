@@ -14,24 +14,25 @@ func ClientJoinProgram(
 	request *dto.ClientJoinProgramRequest,
 	clientJoinService abstract.IClientJoinService,
 	clientService abstract.IClientService,
-) (interface{}, error) {
+) (dto.ClientJoinProgramResponse, error) {
 	userID, ok := ctx.GetLocal("user_id").(int)
 	if !ok {
 		ctx.Status(http.StatusUnauthorized)
-		return nil, errors.New("unauthorized")
+		return dto.ClientJoinProgramResponse{}, errors.New("unauthorized")
 	}
 
 	role, ok := ctx.GetLocal("role").(string)
 	if !ok {
 		ctx.Status(http.StatusUnauthorized)
-		return nil, errors.New("unauthorized")
+		return dto.ClientJoinProgramResponse{}, errors.New("unauthorized")
 	}
 
-	if role == "client" {
+	switch role {
+	case "client":
 		client, err := clientService.GetByID(userID)
 		if err != nil {
 			ctx.Status(http.StatusNotFound)
-			return nil, err
+			return dto.ClientJoinProgramResponse{}, err
 		}
 		programID := ctx.Params("program_id")
 		id, err := strconv.Atoi(programID)
@@ -51,9 +52,13 @@ func ClientJoinProgram(
 		ctx.Status(http.StatusOK)
 		return resp, nil
 
-	} else {
+	case "business_owner":
 		ctx.Status(http.StatusBadRequest)
-		return nil, errors.New("unknown role")
+		return dto.ClientJoinProgramResponse{}, errors.New("only client can join the program")
+
+	default:
+		ctx.Status(http.StatusBadRequest)
+		return dto.ClientJoinProgramResponse{}, errors.New("unknown role")
 	}
 }
 

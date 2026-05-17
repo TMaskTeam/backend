@@ -66,7 +66,7 @@ func Run() {
 		}
 	}
 
-	//app.Get("/api/*", api.ApiHandler())
+	app.Get("/api/*", api.ApiHandler())
 
 	app.Post("/api/v1/auth/owner/register", middleware.Adapt(public.OwnerRegister, serviceProvider))
 	app.Post("/api/v1/auth/client/register", middleware.Adapt(public.ClientRegister, serviceProvider))

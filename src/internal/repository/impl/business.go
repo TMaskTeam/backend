@@ -43,3 +43,18 @@ func (r *BusinessRepository) GetByOwnerID(conn abstract.IDBConnection, ownerID i
 	}
 	return ownerDAO.ToDomain()
 }
+
+func (r *BusinessRepository) GetByID(conn abstract.IDBConnection, businessID int) (*domain.Business, error) {
+	db := conn.Get().(*gorm.DB)
+
+	var businessDAO model.Business
+	err := db.Where("business_id = ?", businessID).First(&businessDAO).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return businessDAO.ToDomain()
+}

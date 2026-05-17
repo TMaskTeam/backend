@@ -55,26 +55,17 @@ func Run() {
 	app.Get("/ping", health.PingHandler)
 
 	app.Get("/openapi.yaml", api.OpenapiYamlHandler)
-<<<<<<< HEAD
 
-	app.Get("/api/v1/programs", middleware.Adapt(public.GetAllBonusPrograms, serviceProvider))
-	app.Get("/api/v1/:business_id/programs", middleware.Adapt(public.GetBonusProgramsByBusinessID, serviceProvider))
-	app.Post("/api/v1/:business_id/programs", middleware.Auth(), middleware.Adapt(public.CreateBonusProgram, serviceProvider))
+	app.Get("/api/v1/businesses/programs", middleware.Adapt(public.GetAllBonusPrograms, serviceProvider))
+	app.Get("/api/v1/businesses/:business_id/programs", middleware.Adapt(public.GetBonusProgramsByBusinessID, serviceProvider))
+	app.Post("/api/v1/businesses/:business_id/programs", middleware.Adapt(public.CreateBonusProgram, serviceProvider))
 
 	app.Get("/api/*", api.ApiHandler())
-=======
->>>>>>> dev
 
 	app.Post("/api/v1/auth/owner/register", middleware.Adapt(public.OwnerRegister, serviceProvider))
-	app.Post("/api/v1/auth/owner/login", middleware.Adapt(public.OwnerLogin, serviceProvider))
-
 	app.Post("/api/v1/auth/client/register", middleware.Adapt(public.ClientRegister, serviceProvider))
+	app.Post("/api/v1/auth/owner/login", middleware.Adapt(public.OwnerLogin, serviceProvider))
 	app.Post("/api/v1/auth/client/login", middleware.Adapt(public.ClientLogin, serviceProvider))
-
-	app.Get("/api/v1/me", middleware.Auth(), middleware.Adapt(public.GetMe, serviceProvider))
-	app.Put("/api/v1/me", middleware.Auth(), middleware.Adapt(public.Update, serviceProvider))
-
-	app.Get("/api/*", api.ApiHandler())
 
 	log.Fatal(app.Listen(":" + strconv.Itoa(config.ServerPort)))
 }

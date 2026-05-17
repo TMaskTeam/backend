@@ -10,4 +10,5 @@ type IBusinessRepository interface {
 	Delete(conn abstract.IDBConnection, businessID int) error
 
 	GetByOwnerID(conn abstract.IDBConnection, ownerID int) (*domain.Business, error)
+	GetByID(conn abstract.IDBConnection, ID int) (*domain.Business, error)
 }

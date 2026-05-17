@@ -6,5 +6,3 @@ type Business struct {
 	Name       string
 	Address    string
 }
-
-// изм

@@ -2,6 +2,7 @@ package public
 
 import (
 	context "backend/src/internal/context/abstract"
+	"backend/src/internal/domain"
 	"backend/src/internal/dto"
 	"backend/src/internal/service/abstract"
 	"net/http"
@@ -30,7 +31,7 @@ func CreateBonusProgram(
 		return nil, err
 	}
 
-	resp := dto.ToBonusProgramResponse(program)
+	resp := buildBonusProgramResponse(program)
 
 	ctx.Status(http.StatusCreated)
 	return &resp, nil
@@ -52,7 +53,7 @@ func GetBonusProgramsByBusinessID(
 		return nil, err
 	}
 
-	resp := dto.ToBonusProgramResponseList(programs)
+	resp := buildBonusProgramResponseList(programs)
 
 	ctx.Status(http.StatusOK)
 	return resp, nil
@@ -68,8 +69,25 @@ func GetAllBonusPrograms(
 		return nil, err
 	}
 
-	resp := dto.ToBonusProgramResponseList(programs)
+	resp := buildBonusProgramResponseList(programs)
 
 	ctx.Status(http.StatusOK)
 	return resp, nil
+}
+
+func buildBonusProgramResponse(program *domain.BonusProgram) dto.BonusProgramResponse {
+	return dto.BonusProgramResponse{
+		ProgramID:   program.ProgramID,
+		BusinessID:  program.BusinessID,
+		ProgramName: program.ProgramName,
+		TokenName:   program.TokenName,
+	}
+}
+
+func buildBonusProgramResponseList(programs []*domain.BonusProgram) []dto.BonusProgramResponse {
+	result := make([]dto.BonusProgramResponse, 0, len(programs))
+	for _, p := range programs {
+		result = append(result, buildBonusProgramResponse(p))
+	}
+	return result
 }

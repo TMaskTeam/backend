@@ -84,6 +84,10 @@ func Run() {
 	app.Delete("/api/v1/businesses/:business_id", middleware.Auth(), middleware.Adapt(public.DeleteBusiness, serviceProvider))
 	app.Post("/api/v1/programs/:program_id/join", middleware.Adapt(public.ClientJoinProgram, serviceProvider))
 
+	app.Get("/api/v1/businesses/:business_id", middleware.Auth(), middleware.Adapt(public.GetBusinessByID, serviceProvider))
+	app.Put("/api/v1/businesses/:business_id", middleware.Auth(), middleware.Adapt(public.UpdateBusiness, serviceProvider))
+	app.Delete("/api/v1/businesses/:business_id", middleware.Auth(), middleware.Adapt(public.DeleteBusinessByID, serviceProvider))
+
 	app.Get("/api/*", api.ApiHandler())
 
 	log.Fatal(app.Listen(":" + strconv.Itoa(config.ServerPort)))

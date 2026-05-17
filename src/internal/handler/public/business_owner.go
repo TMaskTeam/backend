@@ -35,13 +35,13 @@ func OwnerRegister(
 		ctx.Status(http.StatusConflict)
 		return dto.BusinessOwnerResponse{}, err
 	}
-	resp := buildBusinessOwnerRegisterResponse(owner)
+	resp := buildBusinessOwnerResponse(owner)
 
 	ctx.Status(http.StatusOK)
 	return resp, nil
 }
 
-func buildBusinessOwnerRegisterResponse(createdOwner *domain.BusinessOwner) dto.BusinessOwnerResponse {
+func buildBusinessOwnerResponse(createdOwner *domain.BusinessOwner) dto.BusinessOwnerResponse {
 	return dto.BusinessOwnerResponse{
 		ID:          createdOwner.ID,
 		FirstName:   createdOwner.FirstName,
@@ -65,7 +65,8 @@ func OwnerLogin(
 		return dto.BusinessOwnerResponse{}, err
 	}
 
-	resp := buildBusinessOwnerLoginResponse(owner)
+	ctx.SetCookie("token", token, expiresAt, true, false)
+	resp := buildBusinessOwnerResponse(owner)
 
 	ctx.Status(http.StatusOK)
 	return resp, nil

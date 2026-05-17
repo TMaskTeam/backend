@@ -10,4 +10,5 @@ type IClientService interface {
 	Register(client *domain.Client) error
 
 	GetByID(id int) (*domain.Client, error)
+	Update(client *domain.Client) error
 }

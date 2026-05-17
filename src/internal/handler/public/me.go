@@ -6,6 +6,7 @@ import (
 	"backend/src/internal/dto"
 	"backend/src/internal/service/abstract"
 	"errors"
+	"log"
 	"net/http"
 )
 
@@ -14,6 +15,7 @@ func GetMe(
 	ownerService abstract.IBusinessOwnerService,
 	clientService abstract.IClientService,
 ) (interface{}, error) {
+	log.Println("=== GetMe called ===") // ← добавить
 	userID, ok := ctx.GetLocal("user_id").(int)
 	if !ok {
 		ctx.Status(http.StatusUnauthorized)

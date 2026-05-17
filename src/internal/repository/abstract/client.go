@@ -6,6 +6,7 @@ import (
 )
 
 type IClientRepository interface {
+	UpdateByID(conn abstract.IDBConnection, client *domain.Client) error
 	Upsert(conn abstract.IDBConnection, client *domain.Client) error
 	Delete(conn abstract.IDBConnection, clientID int) error
 

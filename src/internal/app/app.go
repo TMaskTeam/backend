@@ -29,10 +29,12 @@ func Run() {
 	ownerRepo := rimpl.NewBusinessOwnerRepository()
 	clientRepo := rimpl.NewClientRepository()
 	bonusProgramRepo := rimpl.NewBonusProgramRepository()
+	businessRepo := rimpl.NewBusinessRepository()
 
 	serviceProvider.Register((*sabst.IBonusProgramService)(nil), simpl.NewBonusProgramService(conn, bonusProgramRepo))
 	serviceProvider.Register((*sabst.IBusinessOwnerService)(nil), simpl.NewBusinessOwnerService(conn, ownerRepo))
 	serviceProvider.Register((*sabst.IClientService)(nil), simpl.NewClientService(conn, clientRepo))
+	serviceProvider.Register((*sabst.IBusinessService)(nil), simpl.NewBusinessService(conn, businessRepo))
 
 	app := fiber.New(fiber.Config{
 		EnableSplittingOnParsers: true,
@@ -66,6 +68,15 @@ func Run() {
 	app.Post("/api/v1/auth/client/register", middleware.Adapt(public.ClientRegister, serviceProvider))
 	app.Post("/api/v1/auth/owner/login", middleware.Adapt(public.OwnerLogin, serviceProvider))
 	app.Post("/api/v1/auth/client/login", middleware.Adapt(public.ClientLogin, serviceProvider))
+
+	app.Get("/api/v1/me", middleware.Auth(), middleware.Adapt(public.GetMe, serviceProvider))
+	app.Put("/api/v1/me", middleware.Auth(), middleware.Adapt(public.Update, serviceProvider))
+
+	app.Post("/api/v1/businesses", middleware.Auth(), middleware.Adapt(public.CreateBusiness, serviceProvider))
+	app.Get("/api/v1/businesses", middleware.Auth(), middleware.Adapt(public.GetAllBusinesses, serviceProvider))
+	app.Delete("/api/v1/businesses/:business_id", middleware.Auth(), middleware.Adapt(public.DeleteBusiness, serviceProvider))
+
+	app.Get("/api/*", api.ApiHandler())
 
 	log.Fatal(app.Listen(":" + strconv.Itoa(config.ServerPort)))
 }

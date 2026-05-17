@@ -12,6 +12,7 @@ import (
 	"backend/src/internal/middleware"
 	"backend/src/internal/provider"
 	"backend/src/internal/validator"
+	"backend/src/pkg/jwt"
 
 	sabst "backend/src/internal/service/abstract"
 	simpl "backend/src/internal/service/impl"
@@ -23,6 +24,8 @@ import (
 
 func Run() {
 	config := config.Load()
+	jwt.InitJWTSecret(config.JWTSecret)
+
 	conn := postgres.NewPostgresConnection(config.GetDBDSN())
 	serviceProvider := provider.NewServiceProvider()
 

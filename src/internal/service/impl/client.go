@@ -1,0 +1,123 @@
+package impl
+
+import (
+	connection "backend/src/internal/db/abstract"
+	"backend/src/internal/domain"
+	repository "backend/src/internal/repository/abstract"
+	"backend/src/pkg/jwt"
+	"backend/src/pkg/password"
+	"errors"
+	"time"
+)
+
+type ClientService struct {
+	conn       connection.IDBConnection
+	clientRepo repository.IClientRepository
+}
+
+func NewClientService(
+	conn connection.IDBConnection,
+	clientRepo repository.IClientRepository,
+) *ClientService {
+	return &ClientService{
+		conn:       conn,
+		clientRepo: clientRepo,
+	}
+}
+
+func (s *ClientService) Login(login, pw string) (string, time.Time, *domain.Client, error) {
+	client, err := s.clientRepo.GetByLogin(s.conn, login)
+	if err != nil {
+		return "", time.Time{}, nil, err
+	}
+	if client == nil {
+		return "", time.Time{}, nil, errors.New("this login does not exists")
+	}
+
+	hash, err := s.clientRepo.GetPasswordHashById(s.conn, client.ID)
+	if err != nil {
+		return "", time.Time{}, nil, err
+	}
+
+	if err := password.CheckHash(hash, pw); err != nil {
+		return "", time.Time{}, nil, errors.New("invalid credentials")
+	}
+
+	token, expiresAt, err := jwt.GenerateToken(client.ID, "client")
+	if err != nil {
+		return "", time.Time{}, nil, err
+	}
+
+	return token, expiresAt, client, nil
+}
+
+func (cs *ClientService) Register(newClient *domain.Client) error {
+	exists, err := cs.clientRepo.GetByEmail(cs.conn, newClient.Email)
+	if err != nil {
+		return err
+	}
+	if exists != nil {
+		return errors.New("email is already used")
+	}
+
+	exists, err = cs.clientRepo.GetByPhoneNumber(cs.conn, newClient.PhoneNumber)
+	if err != nil {
+		return err
+	}
+	if exists != nil {
+		return errors.New("phone number is already used")
+	}
+
+	err = cs.clientRepo.Upsert(cs.conn, newClient)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (cs *ClientService) Update(client *domain.Client) (*domain.Client, error) {
+	existing, err := cs.clientRepo.GetByID(cs.conn, client.ID)
+	if err != nil {
+		return nil, err
+	}
+	if existing == nil {
+		return nil, errors.New("user not found")
+	}
+
+	if client.FirstName != "" {
+		existing.FirstName = client.FirstName
+	}
+	if client.LastName != "" {
+		existing.LastName = client.LastName
+	}
+	if client.MiddleName != nil {
+		existing.MiddleName = client.MiddleName
+	}
+	if client.PhoneNumber != "" {
+		existing.PhoneNumber = client.PhoneNumber
+	}
+	if client.Email != "" {
+		existing.Email = client.Email
+	}
+	if client.Password != "" {
+		hash, err := password.Hash(client.Password)
+		if err != nil {
+			return nil, err
+		}
+		existing.Password = hash
+	}
+	return existing, cs.clientRepo.UpdateByID(cs.conn, existing)
+}
+
+func (cs *ClientService) GetByID(id int) (*domain.Client, error) {
+	exists, err := cs.clientRepo.GetByID(cs.conn, id)
+	if err != nil {
+		return nil, err
+	}
+	if exists == nil {
+		return nil, errors.New("user does not exist")
+	}
+
+	return exists, nil
+}

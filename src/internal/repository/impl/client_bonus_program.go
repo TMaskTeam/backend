@@ -57,3 +57,29 @@ func (cbp *ClientBonusProgramRepository) GetByProgramID(conn abstract.IDBConnect
 
 	return clientBonusProgramDAO.ToDomain()
 }
+
+func (cbp *ClientBonusProgramRepository) GetAllWithClientID(
+	conn abstract.IDBConnection, clientID int,
+) ([]*domain.ClientBonusProgram, error) {
+	db := conn.Get().(*gorm.DB)
+	programs := []*model.ClientBonusProgram{}
+	res := db.Where("client_id = ?", clientID).Find(programs)
+	if res.Error != nil {
+		if res.Error == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, res.Error
+	}
+
+	domainPrograms := []*domain.ClientBonusProgram{}
+	for _, program := range programs {
+		domainProg, err := program.ToDomain()
+		if err != nil {
+			return nil, err
+		}
+
+		domainPrograms = append(domainPrograms, domainProg)
+	}
+
+	return domainPrograms, nil
+}

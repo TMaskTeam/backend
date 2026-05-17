@@ -81,5 +81,44 @@ func buildClientLoginResponse(client *domain.Client) dto.ClientResponse {
 		Email:       client.Email,
 		Birthday:    client.Birthday,
 	}
+}
+
+func GetClientPrograms(
+	ctx context.HandlerContext,
+	clientBonusProgram abstract.IClientBonusProgramService,
+) (dto.ClientProgramsResponse, error) {
+	userID, ok := ctx.GetLocal("user_id").(int)
+	if !ok {
+		ctx.Status(http.StatusUnauthorized)
+		return dto.ClientProgramsResponse{}, errors.New("unauthorized")
+	}
+
+	role, ok := ctx.GetLocal("role").(string)
+	if !ok {
+		ctx.Status(http.StatusUnauthorized)
+		return dto.ClientProgramsResponse{}, errors.New("unauthorized")
+	}
+
+	switch role {
+	case "client":
+		programs, err := clientBonusProgram.GetAllByClientID(userID)
+		if err != nil {
+			ctx.Status(http.StatusNotFound)
+			return dto.ClientProgramsResponse{}, err
+		}
+
+		resp := dto.ClientProgramsResponse{Programs: programs}
+
+		ctx.Status(http.StatusOK)
+		return resp, nil
+
+	case "business_owner":
+		ctx.Status(http.StatusBadRequest)
+		return dto.ClientProgramsResponse{}, errors.New("for client")
+
+	default:
+		ctx.Status(http.StatusBadRequest)
+		return dto.ClientProgramsResponse{}, errors.New("unknown role")
+	}
 
 }

@@ -1,6 +1,9 @@
 package dto
 
-import "time"
+import (
+	"backend/src/internal/domain"
+	"time"
+)
 
 type ClientLoginRequest struct {
 	Login    string `json:"login" validate:"required"`
@@ -25,4 +28,8 @@ type ClientResponse struct {
 	PhoneNumber string    `json:"phone_number"`
 	Email       string    `json:"email"`
 	Birthday    time.Time `json:"birthday"`
+}
+
+type ClientProgramsResponse struct {
+	Programs []*domain.ClientBonusProgram `json:"programs"`
 }

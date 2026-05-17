@@ -123,3 +123,106 @@ func buildCreateBusinessResponse(created *domain.Business) dto.CreateBusinessRes
 		Address:    created.Address,
 	}
 }
+
+func GetBusinessByID(
+	ctx context.HandlerContext,
+	businessService abstract.IBusinessService,
+) (dto.BusinessDetailResponse, error) {
+
+	businessIDStr := ctx.Params("business_id")
+	businessID, err := strconv.Atoi(businessIDStr)
+	if err != nil {
+		ctx.Status(http.StatusBadRequest)
+		return dto.BusinessDetailResponse{}, errors.New("invalid business_id")
+	}
+
+	business, err := businessService.GetByID(businessID)
+	if err != nil {
+		ctx.Status(http.StatusNotFound)
+		return dto.BusinessDetailResponse{}, err
+	}
+
+	ownerID, ok := ctx.GetLocal("user_id").(int)
+	if !ok {
+		ctx.Status(http.StatusUnauthorized)
+		return dto.BusinessDetailResponse{}, errors.New("unauthorized")
+	}
+
+	if business.OwnerID != ownerID {
+		ctx.Status(http.StatusForbidden)
+		return dto.BusinessDetailResponse{}, errors.New("access denied")
+	}
+
+	resp := buildBusinessDetailResponse(business)
+
+	ctx.Status(http.StatusOK)
+	return resp, nil
+}
+
+func UpdateBusiness(
+	ctx context.HandlerContext,
+	req *dto.UpdateBusinessRequest,
+	businessService abstract.IBusinessService,
+) (dto.BusinessDetailResponse, error) {
+
+	ownerID, ok := ctx.GetLocal("user_id").(int)
+	if !ok {
+		ctx.Status(http.StatusUnauthorized)
+		return dto.BusinessDetailResponse{}, errors.New("unauthorized")
+	}
+
+	businessIDStr := ctx.Params("business_id")
+	businessID, err := strconv.Atoi(businessIDStr)
+	if err != nil {
+		ctx.Status(http.StatusBadRequest)
+		return dto.BusinessDetailResponse{}, errors.New("invalid business_id")
+	}
+
+	business, err := businessService.Update(businessID, ownerID, req.Name, req.Address)
+	if err != nil {
+		ctx.Status(http.StatusBadRequest)
+		return dto.BusinessDetailResponse{}, err
+	}
+
+	resp := buildBusinessDetailResponse(business)
+
+	ctx.Status(http.StatusOK)
+	return resp, nil
+}
+
+func DeleteBusinessByID(
+	ctx context.HandlerContext,
+	businessService abstract.IBusinessService,
+) (interface{}, error) {
+
+	ownerID, ok := ctx.GetLocal("user_id").(int)
+	if !ok {
+		ctx.Status(http.StatusUnauthorized)
+		return nil, errors.New("unauthorized")
+	}
+
+	businessIDStr := ctx.Params("business_id")
+	businessID, err := strconv.Atoi(businessIDStr)
+	if err != nil {
+		ctx.Status(http.StatusBadRequest)
+		return nil, errors.New("invalid business_id")
+	}
+
+	err = businessService.Delete(businessID, ownerID)
+	if err != nil {
+		ctx.Status(http.StatusNotFound)
+		return nil, err
+	}
+
+	ctx.Status(http.StatusNoContent)
+	return nil, nil
+}
+
+func buildBusinessDetailResponse(business *domain.Business) dto.BusinessDetailResponse {
+	return dto.BusinessDetailResponse{
+		BusinessID: business.BusinessID,
+		OwnerID:    business.OwnerID,
+		Name:       business.Name,
+		Address:    business.Address,
+	}
+}

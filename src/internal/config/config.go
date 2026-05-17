@@ -12,6 +12,7 @@ type Config struct {
 	DBHost     string
 	DBPort     int
 	ServerPort int
+	JWTSecret  string
 }
 
 func Load() *Config {
@@ -22,6 +23,7 @@ func Load() *Config {
 		DBHost:     "localhost",
 		DBPort:     5432,
 		ServerPort: 8080,
+		JWTSecret:  "",
 	}
 
 	if value := os.Getenv("DATABASE_USER"); value != "" {

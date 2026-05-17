@@ -22,16 +22,13 @@ func NewBusinessService(
 	}
 }
 
-func (s *BusinessService) GetByID(businessID, ownerID int) (*domain.Business, error) {
+func (s *BusinessService) GetByID(businessID int) (*domain.Business, error) {
 	business, err := s.businessRepo.GetByBusinessID(s.conn, businessID)
 	if err != nil {
 		return nil, err
 	}
 	if business == nil {
 		return nil, errors.New("business not found")
-	}
-	if business.OwnerID != ownerID {
-		return nil, errors.New("you don't have permission to view this business")
 	}
 	return business, nil
 }

@@ -29,8 +29,9 @@ func Run() {
 	ownerRepo := rimpl.NewBusinessOwnerRepository()
 	clientRepo := rimpl.NewClientRepository()
 	bonusProgramRepo := rimpl.NewBonusProgramRepository()
+	businessRepo := rimpl.NewBusinessRepository()
 
-	serviceProvider.Register((*sabst.IBonusProgramService)(nil), simpl.NewBonusProgramService(conn, bonusProgramRepo))
+	serviceProvider.Register((*sabst.IBonusProgramService)(nil), simpl.NewBonusProgramService(conn, businessRepo, bonusProgramRepo))
 	serviceProvider.Register((*sabst.IBusinessOwnerService)(nil), simpl.NewBusinessOwnerService(conn, ownerRepo))
 	serviceProvider.Register((*sabst.IClientService)(nil), simpl.NewClientService(conn, clientRepo))
 
@@ -56,9 +57,9 @@ func Run() {
 
 	app.Get("/openapi.yaml", api.OpenapiYamlHandler)
 
-	app.Get("/programs", middleware.Adapt(public.GetAllBonusPrograms, serviceProvider))
-	app.Get("/:business_id/programs", middleware.Adapt(public.GetBonusProgramsByBusinessID, serviceProvider))
-	app.Post("/:business_id/programs", middleware.Auth(), middleware.Adapt(public.CreateBonusProgram, serviceProvider))
+	app.Get("/api/v1//programs", middleware.Adapt(public.GetAllBonusPrograms, serviceProvider))
+	app.Get("/api/v1/:business_id/programs", middleware.Adapt(public.GetBonusProgramsByBusinessID, serviceProvider))
+	app.Post("/api/v1/:business_id/programs", middleware.Auth(), middleware.Adapt(public.CreateBonusProgram, serviceProvider))
 
 	app.Post("/api/v1/auth/owner/register", middleware.Adapt(public.OwnerRegister, serviceProvider))
 	app.Post("/api/v1/auth/owner/login", middleware.Adapt(public.OwnerLogin, serviceProvider))

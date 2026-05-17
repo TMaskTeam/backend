@@ -22,6 +22,44 @@ func NewBusinessService(
 	}
 }
 
+func (s *BusinessService) GetByID(businessID int) (*domain.Business, error) {
+	business, err := s.businessRepo.GetByBusinessID(s.conn, businessID)
+	if err != nil {
+		return nil, err
+	}
+	if business == nil {
+		return nil, errors.New("business not found")
+	}
+	return business, nil
+}
+
+func (s *BusinessService) Update(businessID, ownerID int, name, address string) (*domain.Business, error) {
+	business, err := s.businessRepo.GetByBusinessID(s.conn, businessID)
+	if err != nil {
+		return nil, err
+	}
+	if business == nil {
+		return nil, errors.New("business not found")
+	}
+	if business.OwnerID != ownerID {
+		return nil, errors.New("you don't have permission to update this business")
+	}
+
+	if name != "" {
+		business.Name = name
+	}
+	if address != "" {
+		business.Address = address
+	}
+
+	err = s.businessRepo.Update(s.conn, business)
+	if err != nil {
+		return nil, err
+	}
+
+	return business, nil
+}
+
 func (bs *BusinessService) Create(ownerID int, name string, address string) (*domain.Business, error) {
 	business := &domain.Business{
 		OwnerID: ownerID,

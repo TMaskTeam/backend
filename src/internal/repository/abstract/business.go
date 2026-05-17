@@ -11,4 +11,6 @@ type IBusinessRepository interface {
 
 	GetByOwnerID(conn abstract.IDBConnection, ownerID int) ([]domain.Business, error)
 	GetByBusinessID(conn abstract.IDBConnection, businessID int) (*domain.Business, error)
+
+	Update(conn abstract.IDBConnection, business *domain.Business) error
 }

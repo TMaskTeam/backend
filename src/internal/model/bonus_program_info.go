@@ -7,7 +7,7 @@ import (
 
 type BonusProgramInfo struct {
 	ProgramInfoID            int       `gorm:"column:program_info_id;primaryKey"`
-	ProgramID                int       `gorm:"column:program_id;foreignKey"`
+	ProgramID                int       `gorm:"column:program_id;not null"`
 	VisitTokens              int       `gorm:"column:visit_tokens;not null"`
 	PercentagePurchaseTokens int       `gorm:"column:percentage_purchase_tokens;not null"`
 	RegisterTokens           int       `gorm:"column:register_tokens;not null"`

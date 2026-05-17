@@ -6,7 +6,6 @@ import (
 	"backend/src/internal/model"
 
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 type BusinessRepository struct{}
@@ -15,7 +14,7 @@ func NewBusinessRepository() *BusinessRepository {
 	return &BusinessRepository{}
 }
 
-func (r *BusinessRepository) Upsert(conn abstract.IDBConnection, business *domain.Business) error {
+func (r *BusinessRepository) Create(conn abstract.IDBConnection, business *domain.Business) error {
 	db := conn.Get().(*gorm.DB)
 
 	businessDAO := &model.Business{}
@@ -23,12 +22,7 @@ func (r *BusinessRepository) Upsert(conn abstract.IDBConnection, business *domai
 	if err != nil {
 		return err
 	}
-	return db.Clauses(clause.OnConflict{
-		Columns: []clause.Column{
-			{Name: "business_id"},
-		},
-		UpdateAll: true,
-	}).Create(businessDAO).Error
+	return db.Save(businessDAO).Error
 }
 
 func (r *BusinessRepository) Delete(conn abstract.IDBConnection, businessID int) error {
@@ -36,16 +30,16 @@ func (r *BusinessRepository) Delete(conn abstract.IDBConnection, businessID int)
 	return db.Where("business_id = ?", businessID).Delete(&model.Business{}).Error
 }
 
-func (r *BusinessRepository) GetByID(conn abstract.IDBConnection, businessID int) (*domain.Business, error) {
+func (r *BusinessRepository) GetByOwnerID(conn abstract.IDBConnection, ownerID int) (*domain.Business, error) {
 	db := conn.Get().(*gorm.DB)
 
-	var businessDAO model.Business
-	err := db.Where("business_id = ?", businessID).First(&businessDAO).Error
+	var ownerDAO model.Business
+	err := db.Where("owner_id = ?", ownerID).First(&ownerDAO).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, nil
 		}
 		return nil, err
 	}
-	return businessDAO.ToDomain()
+	return ownerDAO.ToDomain()
 }

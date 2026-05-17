@@ -61,6 +61,7 @@ func OwnerLogin(
 ) (dto.BusinessOwnerLoginResponse, error) {
 	token, expiresAt, owner, err := ownerService.Login(request.Login, request.Password)
 	if err != nil {
+		ctx.Status(http.StatusBadRequest)
 		return dto.BusinessOwnerLoginResponse{}, err
 	}
 

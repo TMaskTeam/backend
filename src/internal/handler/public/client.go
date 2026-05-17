@@ -55,12 +55,13 @@ func buildClientRegisterResponse(createdClient *domain.Client) dto.ClientRespons
 
 func ClientLogin(
 	ctx context.HandlerContext,
-	request *dto.BusinessOwnerLoginRequest,
-	ownerService abstract.IBusinessOwnerService,
-) (dto.BusinessOwnerLoginResponse, error) {
-	token, expiresAt, owner, err := ownerService.Login(request.Login, request.Password)
+	request *dto.ClientLoginRequest,
+	clientService abstract.IClientService,
+) (dto.ClientLoginResponse, error) {
+	token, expiresAt, owner, err := clientService.Login(request.Login, request.Password)
 	if err != nil {
-		return dto.BusinessOwnerLoginResponse{}, err
+		ctx.Status(http.StatusBadRequest)
+		return dto.ClientLoginResponse{}, err
 	}
 
 	resp := buildClientLoginResponse(token, expiresAt, owner)
@@ -69,19 +70,18 @@ func ClientLogin(
 	return resp, nil
 }
 
-func buildClientLoginResponse(token string, expiresAt time.Time, owner *domain.BusinessOwner) dto.BusinessOwnerLoginResponse {
-	return dto.BusinessOwnerLoginResponse{
+func buildClientLoginResponse(token string, expiresAt time.Time, client *domain.Client) dto.ClientLoginResponse {
+	return dto.ClientLoginResponse{
 		Token:     token,
 		ExpiresAt: expiresAt,
-		Owner: dto.BusinessOwnerResponse{
-			ID:          owner.ID,
-			FirstName:   owner.FirstName,
-			MiddleName:  owner.MiddleName,
-			LastName:    owner.LastName,
-			INN:         owner.INN,
-			PhoneNumber: owner.PhoneNumber,
-			Email:       owner.Email,
-			Birthday:    owner.Birthday,
+		Owner: dto.ClientResponse{
+			ID:          client.ID,
+			FirstName:   client.FirstName,
+			MiddleName:  client.MiddleName,
+			LastName:    client.LastName,
+			PhoneNumber: client.PhoneNumber,
+			Email:       client.Email,
+			Birthday:    client.Birthday,
 		},
 	}
 }

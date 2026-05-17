@@ -22,7 +22,13 @@ func (r *BusinessRepository) Create(conn abstract.IDBConnection, business *domai
 	if err != nil {
 		return err
 	}
-	return db.Save(businessDAO).Error
+	err = db.Save(businessDAO).Error
+	if err != nil {
+		return err
+	}
+
+	business.BusinessID = businessDAO.BusinessID
+	return nil
 }
 
 func (r *BusinessRepository) Delete(conn abstract.IDBConnection, businessID int) error {

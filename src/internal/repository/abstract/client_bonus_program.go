@@ -8,6 +8,6 @@ import (
 type IClientBonusProgramRepository interface {
 	Upsert(conn abstract.IDBConnection, bonus *domain.ClientBonusProgram) error
 	Delete(conn abstract.IDBConnection, bonusID int) error
-	GetByClientID(conn abstract.IDBConnection, clientID int) error
-	GetByProgramID(conn abstract.IDBConnection, programID int) error
+	GetByClientID(conn abstract.IDBConnection, clientID int) (*domain.ClientBonusProgram, error)
+	GetByProgramID(conn abstract.IDBConnection, programID int) (*domain.ClientBonusProgram, error)
 }

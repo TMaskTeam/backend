@@ -43,3 +43,7 @@ func (fiberAdapter *FiberCtxAdapter) SetCookie(name, value string, expiresAt tim
 		Path:     "/",
 	})
 }
+
+func (fiberAdapter *FiberCtxAdapter) Params(params string) string {
+	return fiberAdapter.Ctx.Params(params)
+}

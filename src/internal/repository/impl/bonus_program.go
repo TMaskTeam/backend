@@ -22,7 +22,14 @@ func (r *BonusProgramRepository) Create(conn abstract.IDBConnection, bonusProgra
 	if err != nil {
 		return err
 	}
-	return db.Save(bonusProgramDAO).Error
+
+	if err := db.Create(bonusProgramDAO).Error; err != nil {
+		return err
+	}
+
+	bonusProgram.ProgramID = bonusProgramDAO.ProgramID
+
+	return nil
 }
 
 func (r *BonusProgramRepository) Delete(conn abstract.IDBConnection, programID int) error {

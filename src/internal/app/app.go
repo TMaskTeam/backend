@@ -55,21 +55,10 @@ func Run() {
 	app.Get("/ping", health.PingHandler)
 
 	app.Get("/openapi.yaml", api.OpenapiYamlHandler)
-<<<<<<< HEAD
-=======
 
-	apiV1 := app.Group("/api/v1")
-	{
-		businesses := apiV1.Group("/businesses")
-		{
-			businesses.Get("/programs", middleware.Adapt(public.GetAllBonusPrograms, serviceProvider))
-			businesses.Get("/:business_id/programs", middleware.Adapt(public.GetBonusProgramsByBusinessID, serviceProvider))
-			businesses.Post("/:business_id/programs", middleware.Adapt(public.CreateBonusProgram, serviceProvider))
-		}
-	}
-
-	//app.Get("/api/*", api.ApiHandler())
->>>>>>> 08b2ee4 (TASK-29/problem with test post request)
+	app.Get("/programs", middleware.Adapt(public.GetAllBonusPrograms, serviceProvider))
+	app.Get("/:business_id/programs", middleware.Adapt(public.GetBonusProgramsByBusinessID, serviceProvider))
+	app.Post("/:business_id/programs", middleware.Auth(), middleware.Adapt(public.CreateBonusProgram, serviceProvider))
 
 	app.Post("/api/v1/auth/owner/register", middleware.Adapt(public.OwnerRegister, serviceProvider))
 	app.Post("/api/v1/auth/owner/login", middleware.Adapt(public.OwnerLogin, serviceProvider))

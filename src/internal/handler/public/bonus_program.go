@@ -4,27 +4,30 @@ import (
 	context "backend/src/internal/context/abstract"
 	"backend/src/internal/dto"
 	"backend/src/internal/service/abstract"
+	"errors"
 	"net/http"
 	"strconv"
 )
 
 func CreateBonusProgram(
 	ctx context.HandlerContext,
+	req *dto.BonusProgramRequest,
 	bonusProgramService abstract.IBonusProgramService,
 ) (interface{}, error) {
-	businessID, err := strconv.Atoi(ctx.Get("business_id"))
+
+	businessID, err := strconv.Atoi(ctx.Param("business_id"))
 	if err != nil {
 		ctx.Status(http.StatusBadRequest)
-		return nil, err
+		return nil, errors.New("invalid business_id")
 	}
 
-	var req dto.BonusProgramRequest
-	if err := ctx.BindJSON(&req); err != nil {
-		ctx.Status(http.StatusBadRequest)
-		return nil, err
+	ownerID, ok := ctx.GetLocal("user_id").(int)
+	if !ok {
+		ctx.Status(http.StatusUnauthorized)
+		return nil, errors.New("unauthorized")
 	}
 
-	program, err := bonusProgramService.Create(businessID, req.ProgramName, req.TokenName)
+	program, err := bonusProgramService.Create(businessID, ownerID, req.ProgramName, req.TokenName)
 	if err != nil {
 		ctx.Status(http.StatusInternalServerError)
 		return nil, err

@@ -30,16 +30,44 @@ func (r *BonusProgramRepository) Delete(conn abstract.IDBConnection, programID i
 	return db.Where("program_id = ?", programID).Delete(&model.BonusProgram{}).Error
 }
 
-func (r *BonusProgramRepository) GetByBusinessID(conn abstract.IDBConnection, businessID int) (*domain.BonusProgram, error) {
+func (r *BonusProgramRepository) GetByBusinessID(conn abstract.IDBConnection, businessID int) ([]*domain.BonusProgram, error) {
 	db := conn.Get().(*gorm.DB)
 
-	var bonusProgramDAO model.BonusProgram
-	err := db.Where("business_id = ?", businessID).First(&bonusProgramDAO).Error
+	var bonusProgramsDAO []model.BonusProgram
+	err := db.Where("business_id = ?", businessID).Find(&bonusProgramsDAO).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return nil, nil
-		}
 		return nil, err
 	}
-	return bonusProgramDAO.ToDomain()
+
+	result := make([]*domain.BonusProgram, 0, len(bonusProgramsDAO))
+	for _, dao := range bonusProgramsDAO {
+		domainObj, err := dao.ToDomain()
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, domainObj)
+	}
+
+	return result, nil
+}
+
+func (r *BonusProgramRepository) GetAll(conn abstract.IDBConnection) ([]*domain.BonusProgram, error) {
+	db := conn.Get().(*gorm.DB)
+
+	var bonusProgramsDAO []model.BonusProgram
+	err := db.Find(&bonusProgramsDAO).Error
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]*domain.BonusProgram, 0, len(bonusProgramsDAO))
+	for _, dao := range bonusProgramsDAO {
+		domainObj, err := dao.ToDomain()
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, domainObj)
+	}
+
+	return result, nil
 }

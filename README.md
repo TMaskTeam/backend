@@ -86,6 +86,16 @@ Cookie: token=<JWT_TOKEN>
 
 ---
 
+### Формат ошибки
+
+```json
+{
+    "error": "inn is already used"
+}
+```
+
+---
+
 #### POST /auth/owner/register — Регистрация владельца бизнеса
 
 **Request:**
@@ -882,16 +892,6 @@ Cookie: token=<JWT_TOKEN>
     "amount": -50,
     "new_balance": 100,
     "description": "Списано 50 кофеинов"
-}
-```
-
----
-
-### Формат ошибки
-
-```json
-{
-    "error": "inn is already used"
 }
 ```
 

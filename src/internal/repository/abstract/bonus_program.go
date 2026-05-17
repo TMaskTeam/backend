@@ -5,7 +5,6 @@ import (
 	"backend/src/internal/domain"
 )
 
-// изм
 type IBonusProgramRepository interface {
 	Create(conn abstract.IDBConnection, bonusProgram *domain.BonusProgram) error
 	Delete(conn abstract.IDBConnection, programID int) error

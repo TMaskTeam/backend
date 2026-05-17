@@ -14,7 +14,6 @@ type Business struct {
 	UpdatedAt  time.Time `gorm:"column:updated_at;autoUpdateTime"`
 }
 
-// изм
 func (m *Business) ToDomain() (*domain.Business, error) {
 	return ToDomain[Business, domain.Business](m)
 }

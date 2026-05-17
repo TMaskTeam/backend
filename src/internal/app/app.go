@@ -53,12 +53,17 @@ func Run() {
 	app.Get("/ping", health.PingHandler)
 
 	app.Get("/openapi.yaml", api.OpenapiYamlHandler)
-	app.Get("/api/*", api.ApiHandler())
 
 	app.Post("/api/v1/auth/owner/register", middleware.Adapt(public.OwnerRegister, serviceProvider))
-	app.Post("/api/v1/auth/client/register", middleware.Adapt(public.ClientRegister, serviceProvider))
 	app.Post("/api/v1/auth/owner/login", middleware.Adapt(public.OwnerLogin, serviceProvider))
+
+	app.Post("/api/v1/auth/client/register", middleware.Adapt(public.ClientRegister, serviceProvider))
 	app.Post("/api/v1/auth/client/login", middleware.Adapt(public.ClientLogin, serviceProvider))
+
+	app.Get("/api/v1/me", middleware.Auth(), middleware.Adapt(public.GetMe, serviceProvider))
+	app.Put("/api/v1/me", middleware.Auth(), middleware.Adapt(public.Update, serviceProvider))
+
+	app.Get("/api/*", api.ApiHandler())
 
 	log.Fatal(app.Listen(":" + strconv.Itoa(config.ServerPort)))
 }

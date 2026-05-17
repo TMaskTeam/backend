@@ -6,6 +6,7 @@ import (
 )
 
 type IBusinessOwnerRepository interface {
+	UpdateByID(conn abstract.IDBConnection, owner *domain.BusinessOwner) error
 	Upsert(conn abstract.IDBConnection, owner *domain.BusinessOwner) error
 	Delete(conn abstract.IDBConnection, ownerID int) error
 
@@ -15,4 +16,5 @@ type IBusinessOwnerRepository interface {
 	GetByEmail(conn abstract.IDBConnection, email string) (*domain.BusinessOwner, error)
 
 	GetByLogin(conn abstract.IDBConnection, login string) (*domain.BusinessOwner, error)
+	GetByID(conn abstract.IDBConnection, id int) (*domain.BusinessOwner, error)
 }

@@ -36,36 +36,26 @@ func (r *BusinessRepository) Delete(conn abstract.IDBConnection, businessID int)
 	return db.Where("business_id = ?", businessID).Delete(&model.Business{}).Error
 }
 
-func (r *BusinessRepository) GetByOwnerID(conn abstract.IDBConnection, ownerID int) ([]domain.Business, error) {
+func (r *BusinessRepository) GetByOwnerID(conn abstract.IDBConnection, ownerID int) ([]*domain.Business, error) {
 	db := conn.Get().(*gorm.DB)
-
-	var ownerDAOs []model.Business
-	err := db.Where("owner_id = ?", ownerID).Find(&ownerDAOs).Error
+	var businesses []model.Business
+	err := db.Where("owner_id = ?", ownerID).Find(&businesses).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return nil, nil
-		}
 		return nil, err
 	}
-	return (&model.Business{}).ToDomainSlice(ownerDAOs)
+
+	result := make([]*domain.Business, 0, len(businesses))
+	for _, b := range businesses {
+		domainObj, err := b.ToDomain()
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, domainObj)
+	}
+	return result, nil
 }
 
 func (r *BusinessRepository) GetByBusinessID(conn abstract.IDBConnection, businessID int) (*domain.Business, error) {
-	db := conn.Get().(*gorm.DB)
-
-	var businessDAO model.Business
-	err := db.Where("business_id = ?", businessID).First(&businessDAO).Error
-	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return nil, nil
-		}
-		return nil, err
-	}
-
-	return businessDAO.ToDomain()
-}
-
-func (r *BusinessRepository) GetByID(conn abstract.IDBConnection, businessID int) (*domain.Business, error) {
 	db := conn.Get().(*gorm.DB)
 
 	var businessDAO model.Business

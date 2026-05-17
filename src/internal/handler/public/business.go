@@ -101,18 +101,16 @@ func DeleteBusiness(
 	return nil, nil
 }
 
-func buildBusinessesListResponse(businesses []domain.Business) dto.BusinessesListResponse {
-	resp := dto.BusinessesListResponse{
-		Businesses: make([]dto.BusinessResponse, 0, len(businesses)),
-	}
+func buildBusinessesListResponse(businesses []*domain.Business) dto.BusinessesListResponse {
+	resp := make([]dto.BusinessResponse, 0, len(businesses))
 	for _, b := range businesses {
-		resp.Businesses = append(resp.Businesses, dto.BusinessResponse{
+		resp = append(resp, dto.BusinessResponse{
 			BusinessID: b.BusinessID,
 			Name:       b.Name,
 			Address:    b.Address,
 		})
 	}
-	return resp
+	return dto.BusinessesListResponse{Businesses: resp}
 }
 
 func buildCreateBusinessResponse(created *domain.Business) dto.CreateBusinessResponse {

@@ -6,14 +6,12 @@ import (
 )
 
 type IClientRepository interface {
-	UpdateByID(conn abstract.IDBConnection, client *domain.Client) error
 	Upsert(conn abstract.IDBConnection, client *domain.Client) error
 	Delete(conn abstract.IDBConnection, clientID int) error
-
 	GetPasswordHashById(conn abstract.IDBConnection, clientID int) (string, error)
 	GetByPhoneNumber(conn abstract.IDBConnection, phoneNumber string) (*domain.Client, error)
 	GetByEmail(conn abstract.IDBConnection, email string) (*domain.Client, error)
-
+	GetByID(conn abstract.IDBConnection, clientID int) (*domain.Client, error)
 	GetByLogin(conn abstract.IDBConnection, login string) (*domain.Client, error)
-	GetByID(conn abstract.IDBConnection, id int) (*domain.Client, error)
+	UpdateByID(conn abstract.IDBConnection, client *domain.Client) error
 }

@@ -78,30 +78,25 @@ func (cs *ClientService) Register(newClient *domain.Client) error {
 }
 
 func (cs *ClientService) Join(client *domain.Client, programID int) (int, int, error) {
-	client, err := cs.clientRepo.GetPasswordHashById(cs.conn, client.ID)
-	if client == nil {
-		return -1, -1, errors.New("this client does not exists")
-	}
-
 	hash, err := cs.clientRepo.GetPasswordHashById(cs.conn, client.ID)
 	if err != nil {
-		return -1, -1, err
+		return -1, -1, errors.New("this client does not exists")
 	}
 
 	if err := password.CheckHash(hash, client.Password); err != nil {
 		return -1, -1, errors.New("invalid credentials")
 	}
 
-	clientBonusProgram, err := cs.clientBonusProgramRepo.GetByClientID(client.ID)
-	if clientBonusProgram != nil {
-		return clientBonusProgram.ID, clientBonusProgram.TokensCount, nil
+	existClientBonusProgram, err := cs.clientBonusProgramRepo.GetByClientID(cs.conn, client.ID)
+	if existClientBonusProgram != nil {
+		return existClientBonusProgram.ID, existClientBonusProgram.TokensCount, nil
 	}
 
-	clientBonusProgram := &domain.ClientBonusProgram{}
-	err = cs.clientBonusProgramRepo.Upsert(cs.conn, clientBonusProgram)
+	newClientBonusProgram := &domain.ClientBonusProgram{}
+	err = cs.clientBonusProgramRepo.Upsert(cs.conn, newClientBonusProgram)
 	if err != nil {
-		return err
+		return -1, -1, err
 	}
 
-	return clientBonusProgramID, 0, nil
+	return newClientBonusProgram.ID, 0, nil
 }

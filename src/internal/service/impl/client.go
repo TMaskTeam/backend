@@ -43,7 +43,7 @@ func (s *ClientService) Login(login, pw string) (string, time.Time, *domain.Clie
 		return "", time.Time{}, nil, errors.New("invalid credentials")
 	}
 
-	token, expiresAt, err := jwt.GenerateToken(client.ID, "business_owner")
+	token, expiresAt, err := jwt.GenerateToken(client.ID, "client")
 	if err != nil {
 		return "", time.Time{}, nil, err
 	}
@@ -76,26 +76,48 @@ func (cs *ClientService) Register(newClient *domain.Client) error {
 	return nil
 }
 
-func (cs *ClientService) Join(client *domain.Client, programID int) (int, int, error) {
-	hash, err := cs.clientRepo.GetPasswordHashById(cs.conn, client.ID)
+func (cs *ClientService) Update(client *domain.Client) (*domain.Client, error) {
+	existing, err := cs.clientRepo.GetByID(cs.conn, client.ID)
 	if err != nil {
-		return -1, -1, errors.New("this client does not exists")
+		return nil, err
+	}
+	if existing == nil {
+		return nil, errors.New("user not found")
 	}
 
-	if err := password.CheckHash(hash, client.Password); err != nil {
-		return -1, -1, errors.New("invalid credentials")
+	if client.FirstName != "" {
+		existing.FirstName = client.FirstName
 	}
-
-	existClientBonusProgram, err := cs.clientBonusProgramRepo.GetByClientID(cs.conn, client.ID)
-	if existClientBonusProgram != nil {
-		return existClientBonusProgram.ID, existClientBonusProgram.TokensCount, nil
+	if client.LastName != "" {
+		existing.LastName = client.LastName
 	}
+	if client.MiddleName != nil {
+		existing.MiddleName = client.MiddleName
+	}
+	if client.PhoneNumber != "" {
+		existing.PhoneNumber = client.PhoneNumber
+	}
+	if client.Email != "" {
+		existing.Email = client.Email
+	}
+	if client.Password != "" {
+		hash, err := password.Hash(client.Password)
+		if err != nil {
+			return nil, err
+		}
+		existing.Password = hash
+	}
+	return existing, cs.clientRepo.UpdateByID(cs.conn, existing)
+}
 
-	newClientBonusProgram := &domain.ClientBonusProgram{}
-	err = cs.clientBonusProgramRepo.Upsert(cs.conn, newClientBonusProgram)
+func (cs *ClientService) GetByID(id int) (*domain.Client, error) {
+	exists, err := cs.clientRepo.GetByID(cs.conn, id)
 	if err != nil {
-		return -1, -1, err
+		return nil, err
+	}
+	if exists == nil {
+		return nil, errors.New("user does not exist")
 	}
 
-	return newClientBonusProgram.ID, 0, nil
+	return exists, nil
 }

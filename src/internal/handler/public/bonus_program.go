@@ -12,7 +12,7 @@ func CreateBonusProgram(
 	ctx context.HandlerContext,
 	bonusProgramService abstract.IBonusProgramService,
 ) (*dto.BonusProgramResponse, error) {
-	businessID, err := strconv.Atoi(ctx.Param("business_id"))
+	businessID, err := strconv.Atoi(ctx.Params("business_id"))
 	if err != nil {
 		ctx.Status(http.StatusBadRequest)
 		return nil, err
@@ -40,7 +40,7 @@ func GetBonusProgramsByBusinessID(
 	ctx context.HandlerContext,
 	bonusProgramService abstract.IBonusProgramService,
 ) ([]dto.BonusProgramResponse, error) {
-	businessID, err := strconv.Atoi(ctx.Param("business_id"))
+	businessID, err := strconv.Atoi(ctx.Params("business_id"))
 	if err != nil {
 		ctx.Status(http.StatusBadRequest)
 		return nil, err

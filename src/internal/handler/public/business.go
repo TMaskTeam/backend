@@ -72,7 +72,7 @@ func DeleteBusiness(
 	businessService abstract.IBusinessService,
 ) (interface{}, error) {
 
-	businessIDStr := ctx.Param("business_id")
+	businessIDStr := ctx.Params("business_id")
 	businessID, err := strconv.Atoi(businessIDStr)
 	if err != nil {
 		ctx.Status(http.StatusBadRequest)

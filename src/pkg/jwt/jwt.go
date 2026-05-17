@@ -7,7 +7,11 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var secretKey = []byte("t@#mask&&bmstu13!!sgn%&the@3333third?<>")
+var secretKey []byte
+
+func InitJWTSecret(secret string) {
+	secretKey = []byte(secret)
+}
 
 type Claims struct {
 	OwnerID int    `json:"owner_id"`
@@ -15,7 +19,6 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-// GenerateToken - создаёт токен, возвращает (token, expiresAt, error)
 func GenerateToken(ownerID int, role string) (string, time.Time, error) {
 	expiresAt := time.Now().Add(24 * time.Hour)
 
@@ -37,7 +40,6 @@ func GenerateToken(ownerID int, role string) (string, time.Time, error) {
 	return tokenString, expiresAt, nil
 }
 
-// ValidateToken - проверяет токен, возвращает (ownerID, role, error)
 func ValidateToken(tokenString string) (int, string, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {

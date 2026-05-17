@@ -48,7 +48,6 @@ func Run() {
 
 	// CORS middleware
 	app.Use(func(c fiber.Ctx) error {
-		//c.Set("Access-Control-Allow-Origin", "https://midray.ru")
 		c.Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		c.Set("Access-Control-Allow-Headers", "Accept, Content-Type, Authorization")
 
@@ -66,8 +65,6 @@ func Run() {
 	app.Get("/api/v1/businesses/programs", middleware.Adapt(public.GetAllBonusPrograms, serviceProvider))
 	app.Get("/api/v1/businesses/:business_id/programs", middleware.Adapt(public.GetBonusProgramsByBusinessID, serviceProvider))
 	app.Post("/api/v1/businesses/:business_id/programs", middleware.Adapt(public.CreateBonusProgram, serviceProvider))
-
-	app.Get("/api/*", api.ApiHandler())
 
 	app.Post("/api/v1/auth/owner/register", middleware.Adapt(public.OwnerRegister, serviceProvider))
 	app.Post("/api/v1/auth/client/register", middleware.Adapt(public.ClientRegister, serviceProvider))

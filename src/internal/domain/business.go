@@ -3,6 +3,8 @@ package domain
 type Business struct {
 	BusinessID int
 	OwnerID    int
-	Time       string
+	Name       string
 	Address    string
 }
+
+// изм

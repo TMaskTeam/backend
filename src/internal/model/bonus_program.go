@@ -14,6 +14,7 @@ type BonusProgram struct {
 	UpdatedAt   time.Time `gorm:"column:updated_at;autoUpdateTime"`
 }
 
+// изм
 func (m *BonusProgram) ToDomain() (*domain.BonusProgram, error) {
 	return ToDomain[BonusProgram, domain.BonusProgram](m)
 }

@@ -6,3 +6,5 @@ type BonusProgram struct {
 	ProgramName string
 	TokenName   string
 }
+
+// изм

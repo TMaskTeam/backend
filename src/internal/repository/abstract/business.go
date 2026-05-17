@@ -6,9 +6,7 @@ import (
 )
 
 type IBusinessRepository interface {
-	Upsert(conn abstract.IDBConnection, business *domain.Business) error
-
-	Delete(conn abstract.IDBConnection, business_id int) error
-
-	GetByID(conn abstract.IDBConnection, business_id int) error
+	Create(conn abstract.IDBConnection, business *domain.Business) error
+	Delete(conn abstract.IDBConnection, businessID int) error
+	GetByOwnerID(conn abstract.IDBConnection, ownerID int) (*domain.Business, error)
 }

@@ -7,13 +7,14 @@ import (
 
 type Business struct {
 	BusinessID int       `gorm:"column:business_id;primaryKey"`
-	OwnerID    int       `gorm:"column:owner_id;foreignKey"`
+	OwnerID    int       `gorm:"column:owner_id;not null"`
 	Name       string    `gorm:"column:name;not null"`
 	Address    string    `gorm:"column:address;not null"`
 	CreatedAt  time.Time `gorm:"column:created_at;autoCreateTime"`
 	UpdatedAt  time.Time `gorm:"column:updated_at;autoUpdateTime"`
 }
 
+// изм
 func (m *Business) ToDomain() (*domain.Business, error) {
 	return ToDomain[Business, domain.Business](m)
 }

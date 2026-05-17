@@ -43,3 +43,5 @@ func (r *BusinessRepository) GetByOwnerID(conn abstract.IDBConnection, ownerID i
 	}
 	return ownerDAO.ToDomain()
 }
+
+// изм

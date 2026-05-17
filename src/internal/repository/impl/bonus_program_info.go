@@ -43,3 +43,5 @@ func (r *BonusProgramInfoRepository) GetByProgramID(conn abstract.IDBConnection,
 	}
 	return bonusProgramDAO.ToDomain()
 }
+
+// изм

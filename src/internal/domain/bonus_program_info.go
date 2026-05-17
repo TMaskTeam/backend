@@ -10,3 +10,5 @@ type BonusProgramInfo struct {
 	FriendInviteTokens       int
 	MinimumReceiptLimit      int
 }
+
+// изм

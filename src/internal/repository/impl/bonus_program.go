@@ -14,7 +14,7 @@ func NewBonusProgramRepository() *BonusProgramRepository {
 	return &BonusProgramRepository{}
 }
 
-func (r *BonusProgramRepository) Upsert(conn abstract.IDBConnection, bonusProgram *domain.BonusProgram) error {
+func (r *BonusProgramRepository) Create(conn abstract.IDBConnection, bonusProgram *domain.BonusProgram) error {
 	db := conn.Get().(*gorm.DB)
 
 	bonusProgramDAO := &model.BonusProgram{}

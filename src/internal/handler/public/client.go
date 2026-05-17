@@ -88,26 +88,27 @@ func buildClientLoginResponse(token string, expiresAt time.Time, client *domain.
 
 func ClientJoin(
 	ctx context.HandlerContext,
-	request *dto.ClientLoginRequest,
+	request *dto.ClientJoinRequest,
 	clientService abstract.IClientService,
-) (dto.ClientLoginResponse, error) {
-	token, expiresAt, owner, err := clientService.Login(request.Login, request.Password)
+) (dto.ClientJoinResponse, error) {
+	programID, businessID, programName, client, err := clientService.Join(request.Login, request.Password)
 	if err != nil {
 		ctx.Status(http.StatusBadRequest)
-		return dto.ClientLoginResponse{}, err
+		return dto.ClientJoinResponse{}, err
 	}
 
-	resp := buildClientLoginResponse(token, expiresAt, owner)
+	resp := buildClientJoinResponse(programID, businessID, programName, client)
 
 	ctx.Status(http.StatusOK)
 	return resp, nil
 }
 
-func buildClientJoinResponse(token string, expiresAt time.Time, client *domain.Client) dto.ClientLoginResponse {
-	return dto.ClientLoginResponse{
-		Token:     token,
-		ExpiresAt: expiresAt,
-		Owner: dto.ClientResponse{
+func buildClientJoinResponse(programID int, businessID int, programName string, client *domain.Client) dto.ClientJoinResponse {
+	return dto.ClientJoinResponse{
+		ProgramID:   programID,
+		BusinessID:  businessID,
+		ProgramName: programName,
+		Client: dto.ClientResponse{
 			ID:          client.ID,
 			FirstName:   client.FirstName,
 			MiddleName:  client.MiddleName,
